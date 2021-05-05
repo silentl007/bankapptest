@@ -23,6 +23,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  awesome_dialog: ^2.0.0
+  http: ^0.13.3
 
 
   # The following adds the Cupertino Icons font to your application.
