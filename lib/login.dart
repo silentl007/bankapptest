@@ -5,6 +5,7 @@ import 'package:awesome_dialog/awesome_dialog.dart';
 
 class Login extends StatelessWidget {
   LoginLogic loginClass = LoginLogic();
+  UserWidgets userWidgets = UserWidgets();
   final usernameControl = TextEditingController();
   final passwordControl = TextEditingController();
   final _key = GlobalKey<FormState>();
@@ -12,100 +13,126 @@ class Login extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-          backgroundColor: Color(0xFF1C1C1C),
-          appBar: AppBar(),
-          body: SingleChildScrollView(
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "Welcome to",
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: UserColors.yellowColor,
-                      height: 2,
-                    ),
-                  ),
-                  Text(
-                    "HOMELAND",
-                    style: TextStyle(
-                      fontSize: 36,
-                      fontWeight: FontWeight.bold,
-                      color: UserColors.yellowColor,
-                      letterSpacing: 2,
-                      height: 1,
-                    ),
-                  ),
-                  Text(
-                    "Please login to continue",
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: UserColors.yellowColor,
-                      height: 1,
-                    ),
-                  ),
-                  TextFormField(
-                    controller: usernameControl,
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      hintText: 'Email / Username',
-                      hintStyle: TextStyle(
-                        fontSize: 16,
-                        color: Color(0xFFD9BC43),
-                        fontWeight: FontWeight.bold,
+          backgroundColor: UserColors.blackbackground,
+          appBar: userWidgets.userappbar('Login'),
+          body: Center(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      welcomeText(
+                          text: "Welcome to",
+                          sizeFont: 16,
+                          height: 2,
+                          bold: false),
+                      welcomeText(
+                          text: "BANK",
+                          sizeFont: 36,
+                          height: 1,
+                          bold: true,
+                          letterSpace: 2),
+                      welcomeText(
+                          text: "Please login to continue",
+                          sizeFont: 16,
+                          height: 1,
+                          bold: false),
+                      Divider(),
+                      TextFormField(
+                        controller: usernameControl,
+                        keyboardType: TextInputType.number,
+                        decoration: inputdecor('Account Number'),
+                        validator: (text) {},
+                        onSaved: (text) {},
                       ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(25),
-                        borderSide: BorderSide(
-                          width: 0,
-                          style: BorderStyle.none,
-                        ),
+                      Divider(),
+                      TextFormField(
+                        controller: passwordControl,
+                        keyboardType: TextInputType.text,
+                        validator: (text) {},
+                        onSaved: (text) {},
+                        decoration: inputdecor('Password')
                       ),
-                      filled: true,
-                      fillColor: Color(0xFFECCB45),
-                      contentPadding:
-                          EdgeInsets.symmetric(horizontal: 16, vertical: 0),
-                    ),
-                    validator: (text) {},
-                    onSaved: (text) {},
-                  ),
-                  Divider(),
-                  TextFormField(
-                    controller: passwordControl,
-                    keyboardType: TextInputType.text,
-                    validator: (text) {},
-                    onSaved: (text) {},
-                    decoration: InputDecoration(
-                      hintText: 'Password',
-                      hintStyle: TextStyle(
-                        fontSize: 16,
-                        color: Color(0xFFD9BC43),
-                        fontWeight: FontWeight.bold,
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(25),
-                        borderSide: BorderSide(
-                          width: 0,
-                          style: BorderStyle.none,
-                        ),
-                      ),
-                      filled: true,
-                      fillColor: Color(0xFFECCB45),
-                      contentPadding:
-                          EdgeInsets.symmetric(horizontal: 16, vertical: 0),
-                    ),
-                  ),
-                  ElevatedButton(
-                    child: Text('Login'),
-                    onPressed: () {},
-                  ),
-                  ElevatedButton(
-                    child: Text('New User? Register'),
-                    onPressed: () {},
-                  )
-                ]),
+                      Divider(),
+                      button('Sign-In'),
+                      Divider(),
+                      button('New User? Register'),
+                    ]),
+              ),
+            ),
           )),
+    );
+  }
+
+  inputdecor(String text) {
+    return InputDecoration(
+      hintText: text,
+      hintStyle: TextStyle(
+        fontSize: 16,
+        color: UserColors.blackbackground,
+        fontWeight: FontWeight.bold,
+      ),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(25),
+        borderSide: BorderSide(
+          width: 0,
+          style: BorderStyle.none,
+        ),
+      ),
+      filled: true,
+      fillColor: UserColors.yellowColor,
+      contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+    );
+  }
+
+  welcomeText(
+      {@required String text,
+      @required double sizeFont,
+      double height,
+      double letterSpace,
+      bool bold}) {
+    return Text(
+      text,
+      textAlign: TextAlign.center,
+      style: TextStyle(
+        fontSize: sizeFont,
+        fontWeight: bold ? FontWeight.bold : FontWeight.normal,
+        color: UserColors.yellowColor,
+        letterSpacing: letterSpace ?? 0,
+        height: height ?? 0,
+      ),
+    );
+  }
+
+  button(String text) {
+    return Container(
+      height: 40,
+      decoration: BoxDecoration(
+        color: UserColors.yellowColor,
+        borderRadius: BorderRadius.all(
+          Radius.circular(25),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Color(0xFFF3D657).withOpacity(0.2),
+            spreadRadius: 3,
+            blurRadius: 4,
+            offset: Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Center(
+        child: Text(
+          text,
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: UserColors.blackbackground,
+          ),
+        ),
+      ),
     );
   }
 

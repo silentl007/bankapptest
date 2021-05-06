@@ -7,6 +7,22 @@ class UserColors {
   static const yellowColor = Color(0xFFF3D657);
 }
 
+class UserWidgets {
+  userappbar(String text) {
+    return AppBar(
+      title: Text(
+        text,
+        style: TextStyle(
+            color: UserColors.yellowColor,
+            fontWeight: FontWeight.bold,
+            fontSize: 30),
+      ),
+      centerTitle: true,
+      backgroundColor: UserColors.blackbackground,
+    );
+  }
+}
+
 class LoginLogic {
   String username;
   String password;
