@@ -1,5 +1,11 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+
+class UserColors {
+  static const blackbackground = Color(0xFF1C1C1C);
+  static const yellowColor = Color(0xFFF3D657);
+}
 
 class LoginLogic {
   String username;

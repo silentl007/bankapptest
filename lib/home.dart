@@ -8,8 +8,10 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      
+    return SafeArea(
+      child: Scaffold(
+        body: Container()
+      )      
     );
   }
 }

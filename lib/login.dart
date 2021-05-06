@@ -12,32 +12,100 @@ class Login extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(),
-          body: Form(
-        key: _key,
-        child: Column(children: [
-          TextFormField(
-            controller: usernameControl,
-            keyboardType: TextInputType.number,
-            validator: (text) {},
-            onSaved: (text) {},
-          ),
-          TextFormField(
-            controller: passwordControl,
-            keyboardType: TextInputType.text,
-            validator: (text) {},
-            onSaved: (text) {},
-          ),
-          ElevatedButton(
-            child: Text('Login'),
-            onPressed: () {},
-          ),
-          ElevatedButton(
-            child: Text('New User? Register'),
-            onPressed: () {},
-          )
-        ]),
-      )),
+          backgroundColor: Color(0xFF1C1C1C),
+          appBar: AppBar(),
+          body: SingleChildScrollView(
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "Welcome to",
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: UserColors.yellowColor,
+                      height: 2,
+                    ),
+                  ),
+                  Text(
+                    "HOMELAND",
+                    style: TextStyle(
+                      fontSize: 36,
+                      fontWeight: FontWeight.bold,
+                      color: UserColors.yellowColor,
+                      letterSpacing: 2,
+                      height: 1,
+                    ),
+                  ),
+                  Text(
+                    "Please login to continue",
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: UserColors.yellowColor,
+                      height: 1,
+                    ),
+                  ),
+                  TextFormField(
+                    controller: usernameControl,
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                      hintText: 'Email / Username',
+                      hintStyle: TextStyle(
+                        fontSize: 16,
+                        color: Color(0xFFD9BC43),
+                        fontWeight: FontWeight.bold,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(25),
+                        borderSide: BorderSide(
+                          width: 0,
+                          style: BorderStyle.none,
+                        ),
+                      ),
+                      filled: true,
+                      fillColor: Color(0xFFECCB45),
+                      contentPadding:
+                          EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+                    ),
+                    validator: (text) {},
+                    onSaved: (text) {},
+                  ),
+                  Divider(),
+                  TextFormField(
+                    controller: passwordControl,
+                    keyboardType: TextInputType.text,
+                    validator: (text) {},
+                    onSaved: (text) {},
+                    decoration: InputDecoration(
+                      hintText: 'Password',
+                      hintStyle: TextStyle(
+                        fontSize: 16,
+                        color: Color(0xFFD9BC43),
+                        fontWeight: FontWeight.bold,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(25),
+                        borderSide: BorderSide(
+                          width: 0,
+                          style: BorderStyle.none,
+                        ),
+                      ),
+                      filled: true,
+                      fillColor: Color(0xFFECCB45),
+                      contentPadding:
+                          EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+                    ),
+                  ),
+                  ElevatedButton(
+                    child: Text('Login'),
+                    onPressed: () {},
+                  ),
+                  ElevatedButton(
+                    child: Text('New User? Register'),
+                    onPressed: () {},
+                  )
+                ]),
+          )),
     );
   }
 
