@@ -11,7 +11,7 @@ class _HomeState extends State<Home> {
     return SafeArea(
       child: Scaffold(
         body: Center(
-          child: Text('i am in'),
+          child: Text('i am logged!'),
         )
       )      
     );

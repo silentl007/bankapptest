@@ -51,6 +51,25 @@ class UserWidgets {
     );
   }
 
+  welcomeText(
+      {@required String text,
+      @required double sizeFont,
+      double height,
+      double letterSpace,
+      bool bold}) {
+    return Text(
+      text,
+      textAlign: TextAlign.end,
+      style: TextStyle(
+        fontSize: sizeFont,
+        fontWeight: bold ? FontWeight.bold : FontWeight.normal,
+        color: UserColors.yellowColor,
+        letterSpacing: letterSpace ?? 0,
+        height: height ?? 0,
+      ),
+    );
+  }
+
   loadingDiag() {
     return Container(
       color: Colors.transparent,
@@ -151,7 +170,7 @@ class RegisterLogic {
       'phoneNumber': username,
       'password': password
     };
-    Uri link = Uri.parse('https://bank.veegil.com/auth/login');
+    Uri link = Uri.parse('https://bank.veegil.com/auth/signup');
     try {
       var encodeData = jsonEncode(registerDetails);
       var send = await http.post(link,
@@ -159,7 +178,8 @@ class RegisterLogic {
           headers: {'Content-Type': 'application/json; charset=UTF-8'});
       print('=======> body: ${send.body}');
       print('=======> status: ${send.statusCode}');
-      return null;
+       print('=======> register details: $registerDetails');
+      return send.statusCode;
     } catch (e) {
       print('=======> error: $e');
       return null;

@@ -31,18 +31,18 @@ class Login extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        welcomeText(
+                        userWidgets.welcomeText(
                             text: "Welcome to",
                             sizeFont: f16,
                             height: 2,
                             bold: false),
-                        welcomeText(
+                        userWidgets.welcomeText(
                             text: "BANK",
                             sizeFont: f32,
                             height: 1,
                             bold: true,
                             letterSpace: 2),
-                        welcomeText(
+                        userWidgets.welcomeText(
                             text: "Please login to continue",
                             sizeFont: f16,
                             height: 1,
@@ -52,7 +52,8 @@ class Login extends StatelessWidget {
                           onEditingComplete: () => node.nextFocus(),
                           controller: usernameControl,
                           keyboardType: TextInputType.number,
-                          decoration: userWidgets.inputdecor('Account Number', f16),
+                          decoration:
+                              userWidgets.inputdecor('Account Number', f16),
                           validator: (text) {
                             if (text.isEmpty) {
                               return 'This field is empty';
@@ -65,6 +66,7 @@ class Login extends StatelessWidget {
                         Divider(),
                         TextFormField(
                             controller: passwordControl,
+                            obscureText: true,
                             keyboardType: TextInputType.text,
                             validator: (text) {
                               if (text.isEmpty) {
@@ -74,37 +76,22 @@ class Login extends StatelessWidget {
                             onSaved: (text) {
                               loginClass.password = text;
                             },
-                            decoration: userWidgets.inputdecor('Password', f16)),
+                            decoration:
+                                userWidgets.inputdecor('Password', f16)),
                         Divider(),
                         button('Sign-In', context, h40, f24),
                         Divider(),
                         button('New User? Register', context, h40, f24),
+                        userWidgets.welcomeText(
+                            text: "Password forgotten?",
+                            sizeFont: f16,
+                            height: 2,
+                            bold: false),
                       ]),
                 ),
               ),
             ),
           )),
-    );
-  }
-
-  
-
-  welcomeText(
-      {@required String text,
-      @required double sizeFont,
-      double height,
-      double letterSpace,
-      bool bold}) {
-    return Text(
-      text,
-      textAlign: TextAlign.center,
-      style: TextStyle(
-        fontSize: sizeFont,
-        fontWeight: bold ? FontWeight.bold : FontWeight.normal,
-        color: UserColors.yellowColor,
-        letterSpacing: letterSpace ?? 0,
-        height: height ?? 0,
-      ),
     );
   }
 
@@ -153,7 +140,7 @@ class Login extends StatelessWidget {
     );
   }
 
-  login(BuildContext context) async {
+  login(BuildContext context) {
     return showDialog(
         context: context,
         builder: (context) => FutureBuilder(
@@ -162,11 +149,9 @@ class Login extends StatelessWidget {
                 if (snapshot.connectionState != ConnectionState.done) {
                   return userWidgets.loadingDiag();
                 } else if (snapshot.data == 200) {
-                  // login
                   loginSuccess(context);
                   return Container();
                 } else if (snapshot.data == 404) {
-                  // return error
                   return userWidgets.errorDiag(context, 'Wrong login details');
                 } else {
                   return userWidgets.errorDiag(context,
