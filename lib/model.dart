@@ -3,24 +3,22 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class UserColors {
-  static const blackbackground = Color(0xFF1C1C1C);
+  static const blackbackground = Colors.black;
+//  static const blackbackground = Color(0xFF1C1C1C)
   static const yellowColor = Color(0xFFF3D657);
 }
 
 class UserWidgets {
-  userappbar(String text) {
+  userappbar(IconData icon) {
     return AppBar(
       title: Padding(
         padding: const EdgeInsets.all(18.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            Text(
-              text,
-              style: TextStyle(
-                  color: UserColors.yellowColor,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 30),
+            Icon(
+              icon,
+              color: UserColors.yellowColor,
             ),
           ],
         ),
@@ -178,7 +176,7 @@ class RegisterLogic {
           headers: {'Content-Type': 'application/json; charset=UTF-8'});
       print('=======> body: ${send.body}');
       print('=======> status: ${send.statusCode}');
-       print('=======> register details: $registerDetails');
+      print('=======> register details: $registerDetails');
       return send.statusCode;
     } catch (e) {
       print('=======> error: $e');

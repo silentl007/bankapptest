@@ -2,6 +2,7 @@ import 'package:bankapp/home.dart';
 import 'package:bankapp/model.dart';
 import 'package:bankapp/register.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class Login extends StatelessWidget {
   final LoginLogic loginClass = LoginLogic();
@@ -18,80 +19,85 @@ class Login extends StatelessWidget {
     double f16 = size.height * .02;
     double f32 = size.height * .04;
     return SafeArea(
-      child: Scaffold(
-          backgroundColor: UserColors.blackbackground,
-          appBar: userWidgets.userappbar('Login'),
-          body: Center(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: f32, vertical: 16),
-                child: Form(
-                  key: _key,
-                  child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        userWidgets.welcomeText(
-                            text: "Welcome to",
-                            sizeFont: f16,
-                            height: 2,
-                            bold: false),
-                        userWidgets.welcomeText(
-                            text: "BANK",
-                            sizeFont: f32,
-                            height: 1,
-                            bold: true,
-                            letterSpace: 2),
-                        userWidgets.welcomeText(
-                            text: "Please login to continue",
-                            sizeFont: f16,
-                            height: 1,
-                            bold: false),
-                        Divider(),
-                        TextFormField(
-                          onEditingComplete: () => node.nextFocus(),
-                          controller: usernameControl,
-                          keyboardType: TextInputType.number,
-                          decoration:
-                              userWidgets.inputdecor('Account Number', f16),
-                          validator: (text) {
-                            if (text.isEmpty) {
-                              return 'This field is empty';
-                            }
-                          },
-                          onSaved: (text) {
-                            loginClass.username = text;
-                          },
-                        ),
-                        Divider(),
-                        TextFormField(
-                            controller: passwordControl,
-                            obscureText: true,
-                            keyboardType: TextInputType.text,
+      child: WillPopScope(
+        onWillPop: () {
+          _backFunction(context);
+        },
+        child: Scaffold(
+            backgroundColor: UserColors.blackbackground,
+            appBar: userWidgets.userappbar(Icons.login),
+            body: Center(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: f32, vertical: 16),
+                  child: Form(
+                    key: _key,
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          userWidgets.welcomeText(
+                              text: "Welcome to",
+                              sizeFont: f16,
+                              height: 2,
+                              bold: false),
+                          userWidgets.welcomeText(
+                              text: "BANK VEEGIL",
+                              sizeFont: f32,
+                              height: 1,
+                              bold: true,
+                              letterSpace: 2),
+                          userWidgets.welcomeText(
+                              text: "Please login to continue",
+                              sizeFont: f16,
+                              height: 1,
+                              bold: false),
+                          Divider(),
+                          TextFormField(
+                            onEditingComplete: () => node.nextFocus(),
+                            controller: usernameControl,
+                            keyboardType: TextInputType.number,
+                            decoration:
+                                userWidgets.inputdecor('Account Number', f16),
                             validator: (text) {
                               if (text.isEmpty) {
                                 return 'This field is empty';
                               }
                             },
                             onSaved: (text) {
-                              loginClass.password = text;
+                              loginClass.username = text;
                             },
-                            decoration:
-                                userWidgets.inputdecor('Password', f16)),
-                        Divider(),
-                        button('Sign-In', context, h40, f24),
-                        Divider(),
-                        button('New User? Register', context, h40, f24),
-                        userWidgets.welcomeText(
-                            text: "Password forgotten?",
-                            sizeFont: f16,
-                            height: 2,
-                            bold: false),
-                      ]),
+                          ),
+                          Divider(),
+                          TextFormField(
+                              controller: passwordControl,
+                              obscureText: true,
+                              keyboardType: TextInputType.text,
+                              validator: (text) {
+                                if (text.isEmpty) {
+                                  return 'This field is empty';
+                                }
+                              },
+                              onSaved: (text) {
+                                loginClass.password = text;
+                              },
+                              decoration:
+                                  userWidgets.inputdecor('Password', f16)),
+                          Divider(),
+                          button('Sign-In', context, h40, f24),
+                          Divider(),
+                          button('New User? Register', context, h40, f24),
+                          userWidgets.welcomeText(
+                              text: "Password forgotten?",
+                              sizeFont: f16,
+                              height: 2,
+                              bold: false),
+                        ]),
+                  ),
                 ),
               ),
-            ),
-          )),
+            )),
+      ),
     );
   }
 
@@ -103,7 +109,9 @@ class Login extends StatelessWidget {
           var keyState = _key.currentState;
           if (keyState.validate()) {
             keyState.save();
-            login(context);
+            // comment when publish
+            next(context);
+            // login(context); // there is a problem with the api, uncomment when you publish
           }
         } else {
           return Navigator.pushReplacement(
@@ -161,11 +169,64 @@ class Login extends StatelessWidget {
             ));
   }
 
+  next(BuildContext context) {
+    return Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (context) => Home()));
+  }
+
   loginSuccess(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Navigator.pop(context);
       return Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => Home()));
     });
+  }
+
+  Future<bool> _backFunction(BuildContext context) {
+    return showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+              backgroundColor: UserColors.blackbackground,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(20))),
+              title: Center(
+                child: Text(
+                  'Are you sure?',
+                  style: TextStyle(color: UserColors.yellowColor),
+                ),
+              ),
+              content: Text('You are about to exit the application!',
+                  style: TextStyle(color: UserColors.yellowColor)),
+              actions: [
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      primary: UserColors.blackbackground,
+                      side: BorderSide(
+                        color: UserColors.yellowColor,
+                      ),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(50)))),
+                  onPressed: () => SystemNavigator.pop(),
+                  child: Text(
+                    'Yes',
+                    style: TextStyle(color: UserColors.yellowColor),
+                  ),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      primary: UserColors.blackbackground,
+                      side: BorderSide(
+                        color: UserColors.yellowColor,
+                      ),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(50)))),
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: Text(
+                    'No',
+                    style: TextStyle(color: UserColors.yellowColor),
+                  ),
+                )
+              ],
+            ));
   }
 }

@@ -2,12 +2,22 @@ import 'package:bankapp/login.dart';
 import 'package:bankapp/model.dart';
 import 'package:flutter/material.dart';
 
-class Register extends StatelessWidget {
+class Register extends StatefulWidget {
+  @override
+  _RegisterState createState() => _RegisterState();
+}
+
+class _RegisterState extends State<Register> {
   final RegisterLogic registerClass = RegisterLogic();
+
   final UserWidgets userWidgets = UserWidgets();
+
   final usernameControl = TextEditingController();
+
   final passwordControl = TextEditingController();
+
   final _key = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     final node = FocusScope.of(context);
@@ -24,7 +34,7 @@ class Register extends StatelessWidget {
         },
         child: Scaffold(
           backgroundColor: UserColors.blackbackground,
-          appBar: userWidgets.userappbar('Register'),
+          appBar: userWidgets.userappbar(Icons.how_to_reg),
           body: Center(
             child: SingleChildScrollView(
               child: Padding(
@@ -211,7 +221,10 @@ class Register extends StatelessWidget {
   resetField() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       var keyState = _key.currentState;
-      keyState.reset();
+      setState(() {
+       keyState.reset(); 
+      });
+      
     });
   }
 }
