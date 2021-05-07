@@ -10,7 +10,9 @@ class UserColors {
 //  static const blackbackground = Color(0xFF1C1C1C)
   static const yellowColor = Color(0xFFF3D657);
 }
+
 final displayNumber = createDisplay(length: 50);
+
 class UserWidgets {
   userappbar(IconData icon) {
     return AppBar(
@@ -86,7 +88,7 @@ class UserWidgets {
     );
   }
 
-  errorDiag(BuildContext context, String errorDetails) {
+  noticeDiag(BuildContext context, String errorDetails) {
     return Container(
       color: Colors.transparent,
       child: AlertDialog(
@@ -94,23 +96,16 @@ class UserWidgets {
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(20))),
         title: Center(
-            child: Container(
-          child: Row(
-            // crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.error,
-                size: 45,
-                color: UserColors.yellowColor,
-              ),
-              Text(
-                'Error',
-              )
-            ],
-          ),
+            child: Icon(
+          Icons.error,
+          size: 45,
+          color: UserColors.yellowColor,
         )),
-        content: Text(errorDetails),
+        content: Text(
+          errorDetails,
+          style: TextStyle(color: UserColors.yellowColor),
+          textAlign: TextAlign.start,
+        ),
         actions: [
           ElevatedButton.icon(
             icon: Icon(
@@ -252,7 +247,7 @@ class SendMoneyLogic {
       'phoneNumber': username,
       'amount': amount
     };
-    Uri link = Uri.parse('https://bank.veegil.com/auth/signup');
+    Uri link = Uri.parse('https://bank.veegil.com/accounts/transfer');
     try {
       var encodeData = jsonEncode(sendmoneyDetails);
       var send = await http.post(link,

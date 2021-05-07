@@ -44,7 +44,7 @@ class _HomeState extends State<Home> {
         decode = jsonDecode(request.body);
         accountData = decode['data'];
         for (var data in accountData) {
-          if (data['phoneNumber'] == accountN) {
+          if (data['phoneNumber'] == accountN ?? '007') {
             balance = data['balance'];
             print('account balance =====> $balance');
           }

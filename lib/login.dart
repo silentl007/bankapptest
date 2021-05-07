@@ -163,9 +163,9 @@ class Login extends StatelessWidget {
                   loginSuccess(context);
                   return Container();
                 } else if (snapshot.data == 404) {
-                  return userWidgets.errorDiag(context, 'Wrong login details');
+                  return userWidgets.noticeDiag(context, 'Wrong login details');
                 } else {
-                  return userWidgets.errorDiag(context,
+                  return userWidgets.noticeDiag(context,
                       'Unable to login, please check internet connection');
                 }
               },

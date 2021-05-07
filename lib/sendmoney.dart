@@ -15,6 +15,7 @@ class SendMoney extends StatefulWidget {
 class _SendMoneyState extends State<SendMoney> {
   final accountControl = TextEditingController();
   final amountControl = TextEditingController();
+  final _key = GlobalKey<FormState>();
   SendMoneyLogic sendMoneyClass = SendMoneyLogic();
   var getAccount;
   int balance;
@@ -44,7 +45,7 @@ class _SendMoneyState extends State<SendMoney> {
         decode = jsonDecode(request.body);
         accountData = decode['data'];
         for (var data in accountData) {
-          if (data['phoneNumber'] == accountN) {
+          if (data['phoneNumber'] == accountN ?? '007') {
             balance = data['balance'];
             print('account balance =====> $balance');
           }
@@ -59,7 +60,6 @@ class _SendMoneyState extends State<SendMoney> {
 
   @override
   Widget build(BuildContext context) {
-    final node = FocusScope.of(context);
     return SafeArea(
       child: WillPopScope(
         onWillPop: () {
@@ -101,6 +101,7 @@ class _SendMoneyState extends State<SendMoney> {
 
   success(BuildContext context, int amount) {
     Size size = MediaQuery.of(context).size;
+    final node = FocusScope.of(context);
     double h40 = size.height * .05;
     double f24 = size.height * .03;
     double f16 = size.height * .02;
@@ -108,54 +109,57 @@ class _SendMoneyState extends State<SendMoney> {
     double w200 = size.height * .25;
     return Padding(
       padding: const EdgeInsets.all(18.0),
-      child: Column(
-        // mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          UserWidgets().accountDetails(amount),
-          TextFormField(
-              controller: accountControl,
-              keyboardType: TextInputType.number,
-              validator: (text) {
-                if (text.isEmpty) {
-                  return 'This field is empty';
-                }
-              },
-              onSaved: (text) {
-                sendMoneyClass.username = text;
-              },
-              decoration: UserWidgets().inputdecor('Account Number', f16)),
-          Divider(),
-          TextFormField(
-              controller: amountControl,
-              keyboardType: TextInputType.number,
-              validator: (text) {
-                if (text.isEmpty) {
-                  return 'This field is empty';
-                } else if (text.contains(',')) {
-                  return 'Please remove the ,';
-                } else if (text.contains('.')) {
-                  return 'Please remove the .';
-                }
-              },
-              onSaved: (text) {
-                sendMoneyClass.amount = num.tryParse(text);
-              },
-              decoration: UserWidgets().inputdecor('Amount', f16)),
-          Divider(),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              button('Transfer', context, h40, w200, f24),
-              VerticalDivider(),
-              UserWidgets().welcomeText(
-                  text: "Select Beneficiaries",
-                  sizeFont: f16,
-                  height: 2,
-                  bold: false),
-            ],
-          )
-        ],
+      child: Form(
+        key: _key,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            UserWidgets().accountDetails(amount),
+            TextFormField(
+                controller: accountControl,
+                onEditingComplete: () => node.nextFocus(),
+                keyboardType: TextInputType.number,
+                validator: (text) {
+                  if (text.isEmpty) {
+                    return 'This field is empty';
+                  }
+                },
+                onSaved: (text) {
+                  sendMoneyClass.username = text;
+                },
+                decoration: UserWidgets().inputdecor('Account Number', f16)),
+            Divider(),
+            TextFormField(
+                controller: amountControl,
+                keyboardType: TextInputType.number,
+                validator: (text) {
+                  if (text.isEmpty) {
+                    return 'This field is empty';
+                  } else if (text.contains(',')) {
+                    return 'Please remove the ,';
+                  } else if (text.contains('.')) {
+                    return 'Please remove the .';
+                  }
+                },
+                onSaved: (text) {
+                  sendMoneyClass.amount = int.tryParse(text);
+                },
+                decoration: UserWidgets().inputdecor('Amount', f16)),
+            Divider(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                button('Transfer', context, h40, w200, f24),
+                VerticalDivider(),
+                UserWidgets().welcomeText(
+                    text: "Select Beneficiaries",
+                    sizeFont: f16,
+                    height: 2,
+                    bold: false),
+              ],
+            )
+          ],
+        ),
       ),
     );
   }
@@ -163,7 +167,12 @@ class _SendMoneyState extends State<SendMoney> {
   button(String text, BuildContext context, double containerH,
       double containerW, double sizefont) {
     return InkWell(
-      onTap: () {},
+      onTap: () {
+        var keyState = _key.currentState;
+        if (keyState.validate()) {
+          keyState.save();
+        }
+      },
       child: Padding(
         padding: const EdgeInsets.only(left: 0, right: 0),
         child: Container(
@@ -194,6 +203,88 @@ class _SendMoneyState extends State<SendMoney> {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  send(BuildContext context) {
+    return showDialog(
+        context: context,
+        builder: (context) => FutureBuilder(
+              future: sendMoneyClass.sendmoney(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState != ConnectionState.done) {
+                  return UserWidgets().loadingDiag();
+                } else if (snapshot.data == 200) {
+                  resetField();
+                  return noticeDiag(context, 'Money sent!');
+                } else if (snapshot.data == 404) {
+                  return UserWidgets()
+                      .noticeDiag(context, 'Account not found!');
+                } else if (snapshot.data == 409) {
+                  return UserWidgets()
+                      .noticeDiag(context, 'Account not found! 2');
+                } else {
+                  return UserWidgets().noticeDiag(context,
+                      'Unable to register, please check internet connection');
+                }
+              },
+            ));
+  }
+
+  resetField() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      var keyState = _key.currentState;
+      setState(() {
+        keyState.reset();
+        accountControl.clear();
+        amountControl.clear();
+      });
+    });
+  }
+
+  noticeDiag(BuildContext context, String errorDetails) {
+    return Container(
+      color: Colors.transparent,
+      child: AlertDialog(
+        backgroundColor: UserColors.blackbackground,
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(20))),
+        title: Center(
+            child: Icon(
+          Icons.error,
+          size: 45,
+          color: UserColors.yellowColor,
+        )),
+        content: Text(
+          errorDetails,
+          style: TextStyle(color: UserColors.yellowColor),
+          textAlign: TextAlign.start,
+        ),
+        actions: [
+          ElevatedButton.icon(
+            icon: Icon(
+              Icons.close,
+              color: UserColors.blackbackground,
+            ),
+            label: Text(
+              'Close',
+              style: TextStyle(color: UserColors.blackbackground),
+            ),
+            style: ButtonStyle(
+                backgroundColor:
+                    MaterialStateProperty.all<Color>(UserColors.yellowColor),
+                shape: MaterialStateProperty.all<OutlinedBorder>(
+                    RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(50))))),
+            onPressed: () {
+              Navigator.pop(context);
+              setState(() {
+                getAccount = getaccount();
+              });
+            },
+          )
+        ],
       ),
     );
   }

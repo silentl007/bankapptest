@@ -9,15 +9,10 @@ class Register extends StatefulWidget {
 
 class _RegisterState extends State<Register> {
   final RegisterLogic registerClass = RegisterLogic();
-
   final UserWidgets userWidgets = UserWidgets();
-
   final usernameControl = TextEditingController();
-
   final passwordControl = TextEditingController();
-
   final _key = GlobalKey<FormState>();
-
   @override
   Widget build(BuildContext context) {
     final node = FocusScope.of(context);
@@ -153,73 +148,19 @@ class _RegisterState extends State<Register> {
                 if (snapshot.connectionState != ConnectionState.done) {
                   return userWidgets.loadingDiag();
                 } else if (snapshot.data == 200) {
-                  return registerSuccess(context);
+                  resetField();
+                  return userWidgets.noticeDiag(context, 'Account registered successfully!');
                 } else if (snapshot.data == 404) {
-                  return userWidgets.errorDiag(context, 'Unable to register');
+                  return userWidgets.noticeDiag(context, 'Unable to register');
                 } else if (snapshot.data == 409) {
-                  return userWidgets.errorDiag(
+                  return userWidgets.noticeDiag(
                       context, 'Unable to register, account is registered');
                 } else {
-                  return userWidgets.errorDiag(context,
+                  return userWidgets.noticeDiag(context,
                       'Unable to register, please check internet connection');
                 }
               },
             ));
-  }
-
-  registerSuccess(BuildContext context) {
-    resetField();
-    return Container(
-      color: Colors.transparent,
-      child: AlertDialog(
-        backgroundColor: UserColors.blackbackground,
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(20))),
-        title: Center(
-            child: Container(
-          child: Row(
-            // crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Icon(
-              //   Icons.error,
-              //   size: 45,
-              //   color: UserColors.yellowColor,
-              // ),
-              Text(
-                'Success',
-                style: TextStyle(color: UserColors.blackbackground),
-              )
-            ],
-          ),
-        )),
-        content: Text(
-          'Success',
-          style: TextStyle(color: UserColors.blackbackground),
-        ),
-        actions: [
-          ElevatedButton.icon(
-            icon: Icon(
-              Icons.close,
-              color: UserColors.blackbackground,
-            ),
-            label: Text(
-              'Close',
-              style: TextStyle(color: UserColors.blackbackground),
-            ),
-            style: ButtonStyle(
-                backgroundColor:
-                    MaterialStateProperty.all<Color>(UserColors.yellowColor),
-                shape: MaterialStateProperty.all<OutlinedBorder>(
-                    RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(50))))),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          )
-        ],
-      ),
-    );
   }
 
   resetField() {
