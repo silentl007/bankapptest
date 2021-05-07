@@ -1,6 +1,11 @@
 import 'package:bankapp/login.dart';
+import 'package:bankapp/sendmoney.dart';
+import 'package:bankapp/transaction.dart';
+import 'package:bankapp/withdraw.dart';
 import 'package:flutter/material.dart';
 import 'package:bankapp/model.dart';
+import 'package:flutter_animator/flutter_animator.dart';
+import 'package:number_display/number_display.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -8,7 +13,10 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  GlobalKey<AnimatorWidgetState> _heartBeatAnimationkey =
+      GlobalKey<AnimatorWidgetState>();
   final UserWidgets userWidgets = UserWidgets();
+  final displayNumber = createDisplay(length: 50);
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -43,24 +51,44 @@ class _HomeState extends State<Home> {
                         Expanded(
                             flex: 1,
                             child: InkWell(
+                              onTap: () {
+                                return Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => SendMoney()));
+                              },
                               child: Container(
                                 height: double.infinity,
                                 width: double.infinity,
                                 decoration: decorContainer(),
                                 child: columnContainer(
-                                    'Send Money', Icons.send, 70, 30),
+                                  'Send Money',
+                                  Icons.send,
+                                  70,
+                                  30,
+                                ),
                               ),
                             )),
                         VerticalDivider(),
                         Expanded(
                             flex: 1,
                             child: InkWell(
+                              onTap: () {
+                                return Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => Withdraw()));
+                              },
                               child: Container(
                                 height: double.infinity,
                                 width: double.infinity,
                                 decoration: decorContainer(),
-                                child: columnContainer('Withdraw',
-                                    Icons.transfer_within_a_station, 70, 30),
+                                child: columnContainer(
+                                  'Withdraw',
+                                  Icons.transfer_within_a_station,
+                                  70,
+                                  30,
+                                ),
                               ),
                             )),
                       ],
@@ -71,12 +99,19 @@ class _HomeState extends State<Home> {
                 Expanded(
                   flex: 2,
                   child: InkWell(
+                    onTap: () {
+                      return Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => Transaction()));
+                    },
                     child: Container(
-                        height: double.infinity,
-                        width: double.infinity,
-                        decoration: decorContainer(),
-                        child: columnContainer(
-                            'Transaction History', Icons.history, 80, 35)),
+                      height: double.infinity,
+                      width: double.infinity,
+                      decoration: decorContainer(),
+                      child: columnContainer(
+                          'Transaction History', Icons.history, 80, 35),
+                    ),
                   ),
                 ),
               ],
@@ -87,16 +122,25 @@ class _HomeState extends State<Home> {
     );
   }
 
+  heartBeatAnimation({Widget widget}) {
+    return Pulse(
+      preferences: AnimationPreferences(autoPlay: AnimationPlayStates.Loop),
+      child: widget,
+    );
+  }
+
   columnContainer(
       String text, IconData icon, double iconSize, double textSize) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            icon,
-            color: UserColors.yellowColor,
-            size: iconSize,
+          heartBeatAnimation(
+            widget: Icon(
+              icon,
+              color: UserColors.yellowColor,
+              size: iconSize,
+            ),
           ),
           Text(
             text,
@@ -154,7 +198,7 @@ class _HomeState extends State<Home> {
               Center(
                 child: Padding(
                   padding: EdgeInsets.all(5.0),
-                  child: Text(r"$ " "95,940.00",
+                  child: Text("₦ ${displayNumber(10345604786000)}",
                       style: TextStyle(
                           color: UserColors.yellowColor,
                           fontSize: 24.0,
