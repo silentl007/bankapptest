@@ -25,6 +25,9 @@ dependencies:
     sdk: flutter
   awesome_dialog: ^2.0.0
   http: ^0.13.3
+  shared_preferences: ^0.5.2
+  flutter_animator: 2.1.0
+  number_display:
 
 
   # The following adds the Cupertino Icons font to your application.
