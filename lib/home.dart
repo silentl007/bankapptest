@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:bankapp/login.dart';
 import 'package:bankapp/sendmoney.dart';
 import 'package:bankapp/transaction.dart';
-import 'package:bankapp/withdraw.dart';
+import 'package:bankapp/Deposit.dart';
 import 'package:flutter/material.dart';
 import 'package:bankapp/model.dart';
 import 'package:flutter_animator/flutter_animator.dart';
@@ -142,15 +142,15 @@ class _HomeState extends State<Home> {
                                 return Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => Withdraw()));
+                                        builder: (context) => Deposit()));
                               },
                               child: Container(
                                 height: double.infinity,
                                 width: double.infinity,
                                 decoration: decorContainer(),
                                 child: columnContainer(
-                                  'Withdraw',
-                                  Icons.transfer_within_a_station,
+                                  'Deposit',
+                                  Icons.arrow_circle_down,
                                   70,
                                   30,
                                 ),

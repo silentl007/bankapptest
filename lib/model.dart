@@ -255,7 +255,7 @@ class SendMoneyLogic {
           headers: {'Content-Type': 'application/json; charset=UTF-8'});
       print('=======> body: ${send.body}');
       print('=======> status: ${send.statusCode}');
-      print('=======> register details: $sendmoneyDetails');
+      print('=======> send money details: $sendmoneyDetails');
       return send.statusCode;
     } catch (e) {
       print('=======> error: $e');

@@ -1,19 +1,16 @@
-import 'dart:convert';
 import 'package:bankapp/home.dart';
 import 'package:bankapp/model.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 
-class SendMoney extends StatefulWidget {
-  final int balance;
-  SendMoney(this.balance);
+class Deposit extends StatefulWidget {
   @override
-  _SendMoneyState createState() => _SendMoneyState();
+  _DepositState createState() => _DepositState();
 }
 
-class _SendMoneyState extends State<SendMoney> {
-  final accountControl = TextEditingController();
+class _DepositState extends State<Deposit> {
   final amountControl = TextEditingController();
   final _key = GlobalKey<FormState>();
   SendMoneyLogic sendMoneyClass = SendMoneyLogic();
@@ -68,7 +65,7 @@ class _SendMoneyState extends State<SendMoney> {
         },
         child: Scaffold(
           backgroundColor: UserColors.blackbackground,
-          appBar: UserWidgets().userappbar(Icons.send),
+          appBar: UserWidgets().userappbar(Icons.arrow_circle_down),
           body: FutureBuilder(
             future: getAccount,
             builder: (context, snapshot) {
@@ -116,20 +113,6 @@ class _SendMoneyState extends State<SendMoney> {
           children: [
             UserWidgets().accountDetails(amount),
             TextFormField(
-                controller: accountControl,
-                onEditingComplete: () => node.nextFocus(),
-                keyboardType: TextInputType.number,
-                validator: (text) {
-                  if (text.isEmpty) {
-                    return 'This field is empty';
-                  }
-                },
-                onSaved: (text) {
-                  sendMoneyClass.username = text;
-                },
-                decoration: UserWidgets().inputdecor('Account Number', f16)),
-            Divider(),
-            TextFormField(
                 controller: amountControl,
                 keyboardType: TextInputType.number,
                 validator: (text) {
@@ -147,15 +130,9 @@ class _SendMoneyState extends State<SendMoney> {
                 decoration: UserWidgets().inputdecor('Amount', f16)),
             Divider(),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                button('Transfer', context, h40, w200, f24),
-                VerticalDivider(),
-                UserWidgets().welcomeText(
-                    text: "Select Beneficiaries",
-                    sizeFont: f16,
-                    height: 2,
-                    bold: false),
+                button('Deposit', context, h40, w200, f24),
               ],
             )
           ],
@@ -170,9 +147,9 @@ class _SendMoneyState extends State<SendMoney> {
       onTap: () {
         var keyState = _key.currentState;
         if (keyState.validate()) {
+          sendMoneyClass.username = accountN;
           keyState.save();
-          sendDetails(context);
-          // send(context);
+          send(context);
         }
       },
       child: Padding(
@@ -219,7 +196,7 @@ class _SendMoneyState extends State<SendMoney> {
                   return UserWidgets().loadingDiag();
                 } else if (snapshot.data == 200) {
                   resetField();
-                  return noticeDiag(context, 'Money sent!');
+                  return noticeDiag(context, 'Money deposited!');
                 } else if (snapshot.data == 404) {
                   return UserWidgets()
                       .noticeDiag(context, 'Account not found!');
@@ -239,7 +216,6 @@ class _SendMoneyState extends State<SendMoney> {
       var keyState = _key.currentState;
       setState(() {
         keyState.reset();
-        accountControl.clear();
         amountControl.clear();
       });
     });
@@ -289,116 +265,5 @@ class _SendMoneyState extends State<SendMoney> {
         ],
       ),
     );
-  }
-
-  sendDetails(BuildContext context) async {
-    return showDialog(
-        context: context,
-        builder: (context) => Container(
-              color: Colors.transparent,
-              child: AlertDialog(
-                backgroundColor: UserColors.blackbackground,
-                title: Center(
-                  child: Text('Transaction Details',
-                      style: TextStyle(color: UserColors.yellowColor)),
-                ),
-                content: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'To account :',
-                            style: styleText(),
-                          ),
-                          Text(
-                            '${accountControl.text}',
-                            style: styleText(),
-                          )
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Amount :',
-                            style: styleText(),
-                          ),
-                          Text(
-                            '${amountControl.text}',
-                            style: styleText(),
-                          )
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Bank charges :',
-                            style: styleText(),
-                          ),
-                          Text(
-                            '10.0',
-                            style: styleText(),
-                          )
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                actions: [
-                  ElevatedButton.icon(
-                    icon: Icon(
-                      Icons.check,
-                      color: UserColors.yellowColor,
-                    ),
-                    label: Text(
-                      'Accept',
-                      style: styleText(),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                        primary: UserColors.blackbackground,
-                        side: BorderSide(
-                          color: UserColors.yellowColor,
-                        ),
-                        shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(50)))),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                      send(context);
-                    },
-                  ),
-                  ElevatedButton.icon(
-                    icon: Icon(
-                      Icons.close,
-                      color: UserColors.yellowColor,
-                    ),
-                    label: Text(
-                      'Cancel',
-                      style: styleText(),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                        primary: UserColors.blackbackground,
-                        side: BorderSide(
-                          color: UserColors.yellowColor,
-                        ),
-                        shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(50)))),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                  )
-                ],
-              ),
-            ));
-  }
-
-  styleText() {
-    return TextStyle(color: UserColors.yellowColor);
   }
 }

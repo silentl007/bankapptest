@@ -110,8 +110,8 @@ class Login extends StatelessWidget {
           if (keyState.validate()) {
             keyState.save();
             // comment when publish
-            // next(context);
-            login(context); // there is a problem with the api, uncomment when you publish
+            next(context);
+            // login(context); // there is a problem with the api, uncomment when you publish
           }
         } else {
           return Navigator.pushReplacement(
