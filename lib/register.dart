@@ -51,7 +51,7 @@ class _RegisterState extends State<Register> {
                           height: 2,
                           bold: false),
                       userWidgets.welcomeText(
-                          text: "BANK",
+                          text: "BANK VEEGIL",
                           sizeFont: f32,
                           height: 1,
                           bold: true,
@@ -187,12 +187,16 @@ class _RegisterState extends State<Register> {
               //   color: UserColors.yellowColor,
               // ),
               Text(
-                'Error',
+                'Success',
+                style: TextStyle(color: UserColors.blackbackground),
               )
             ],
           ),
         )),
-        content: Text('Success'),
+        content: Text(
+          'Success',
+          style: TextStyle(color: UserColors.blackbackground),
+        ),
         actions: [
           ElevatedButton.icon(
             icon: Icon(
@@ -222,9 +226,10 @@ class _RegisterState extends State<Register> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       var keyState = _key.currentState;
       setState(() {
-       keyState.reset(); 
+        keyState.reset();
+        usernameControl.clear();
+        passwordControl.clear();
       });
-      
     });
   }
 }

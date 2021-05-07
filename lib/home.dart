@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:bankapp/login.dart';
 import 'package:bankapp/sendmoney.dart';
 import 'package:bankapp/transaction.dart';
@@ -5,7 +6,8 @@ import 'package:bankapp/withdraw.dart';
 import 'package:flutter/material.dart';
 import 'package:bankapp/model.dart';
 import 'package:flutter_animator/flutter_animator.dart';
-import 'package:number_display/number_display.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -13,10 +15,48 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  GlobalKey<AnimatorWidgetState> _heartBeatAnimationkey =
-      GlobalKey<AnimatorWidgetState>();
   final UserWidgets userWidgets = UserWidgets();
-  final displayNumber = createDisplay(length: 50);
+  var getAccount;
+  int balance;
+  String accountN;
+  SharedPreferences prefs;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    setPrefs();
+    getAccount = getaccount();
+  }
+
+  setPrefs() async {
+    prefs = await SharedPreferences.getInstance();
+    accountN = prefs.getString('account');
+  }
+
+  getaccount() async {
+    List accountData;
+    var decode;
+    Uri link = Uri.parse('https://bank.veegil.com/accounts/list');
+    try {
+      var request = await http.get(link);
+      if (request.statusCode == 200) {
+        print('account number =====> $accountN');
+        decode = jsonDecode(request.body);
+        accountData = decode['data'];
+        for (var data in accountData) {
+          if (data['phoneNumber'] == accountN) {
+            balance = data['balance'];
+            print('account balance =====> $balance');
+          }
+        }
+        return balance;
+      }
+    } catch (e) {
+      print('error =====> $e');
+      return null;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -28,15 +68,39 @@ class _HomeState extends State<Home> {
       child: Scaffold(
         backgroundColor: UserColors.blackbackground,
         appBar: userWidgets.userappbar(Icons.home),
-        body: success(),
+        body: FutureBuilder(
+          future: getAccount,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState != ConnectionState.done) {
+              return Center(
+                child: CircularProgressIndicator(
+                  backgroundColor: UserColors.yellowColor,
+                ),
+              );
+            } else if (snapshot.hasData) {
+              return success(accountBalance: snapshot.data);
+            } else {
+              return Center(
+                child: ElevatedButton(
+                  child: Text('Retry'),
+                  onPressed: () {
+                    setState(() {
+                      getAccount = getaccount();
+                    });
+                  },
+                ),
+              );
+            }
+          },
+        ),
       ),
     ));
   }
 
-  success() {
+  success({int accountBalance}) {
     return Column(
       children: [
-        accountDetails(),
+        userWidgets.accountDetails(accountBalance),
         Divider(),
         Expanded(
           child: Padding(
@@ -55,7 +119,8 @@ class _HomeState extends State<Home> {
                                 return Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => SendMoney()));
+                                        builder: (context) =>
+                                            SendMoney(accountBalance)));
                               },
                               child: Container(
                                 height: double.infinity,
@@ -160,54 +225,5 @@ class _HomeState extends State<Home> {
             // color: UserColors.yellowColor,
             ),
         borderRadius: BorderRadius.all(Radius.circular(30)));
-  }
-
-  accountDetails() {
-    return Card(
-      color: Colors.transparent,
-      margin: EdgeInsets.all(10.0),
-      child: Container(
-          color: UserColors.blackbackground,
-          padding: EdgeInsets.all(5.0),
-          child: Column(
-            children: <Widget>[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  IconButton(
-                    icon: Icon(
-                      Icons.arrow_back,
-                      color: UserColors.yellowColor,
-                    ),
-                    onPressed: () {},
-                  ),
-                  Text("Savings",
-                      style: TextStyle(
-                          color: UserColors.yellowColor,
-                          fontSize: 20.0,
-                          fontWeight: FontWeight.bold)),
-                  IconButton(
-                    icon: Icon(
-                      Icons.arrow_forward,
-                      color: UserColors.yellowColor,
-                    ),
-                    onPressed: () {},
-                  )
-                ],
-              ),
-              Center(
-                child: Padding(
-                  padding: EdgeInsets.all(5.0),
-                  child: Text("₦ ${displayNumber(10345604786000)}",
-                      style: TextStyle(
-                          color: UserColors.yellowColor,
-                          fontSize: 24.0,
-                          fontWeight: FontWeight.bold)),
-                ),
-              ),
-              SizedBox(height: 35.0),
-            ],
-          )),
-    );
   }
 }

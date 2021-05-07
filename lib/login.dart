@@ -110,37 +110,40 @@ class Login extends StatelessWidget {
           if (keyState.validate()) {
             keyState.save();
             // comment when publish
-            next(context);
-            // login(context); // there is a problem with the api, uncomment when you publish
+            // next(context);
+            login(context); // there is a problem with the api, uncomment when you publish
           }
         } else {
           return Navigator.pushReplacement(
               context, MaterialPageRoute(builder: (context) => Register()));
         }
       },
-      child: Container(
-        height: containerH,
-        decoration: BoxDecoration(
-          color: UserColors.yellowColor,
-          borderRadius: BorderRadius.all(
-            Radius.circular(25),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Color(0xFFF3D657).withOpacity(0.2),
-              spreadRadius: 3,
-              blurRadius: 4,
-              offset: Offset(0, 3),
+      child: Padding(
+        padding: const EdgeInsets.only(left:0, right: 0),
+        child: Container(
+          height: containerH,
+          decoration: BoxDecoration(
+            color: UserColors.yellowColor,
+            borderRadius: BorderRadius.all(
+              Radius.circular(25),
             ),
-          ],
-        ),
-        child: Center(
-          child: Text(
-            text,
-            style: TextStyle(
-              fontSize: sizefont,
-              fontWeight: FontWeight.bold,
-              color: UserColors.blackbackground,
+            boxShadow: [
+              BoxShadow(
+                color: Color(0xFFF3D657).withOpacity(0.2),
+                spreadRadius: 3,
+                blurRadius: 4,
+                offset: Offset(0, 3),
+              ),
+            ],
+          ),
+          child: Center(
+            child: Text(
+              text,
+              style: TextStyle(
+                fontSize: sizefont,
+                fontWeight: FontWeight.bold,
+                color: UserColors.blackbackground,
+              ),
             ),
           ),
         ),

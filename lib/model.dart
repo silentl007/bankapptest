@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:number_display/number_display.dart';
 
 // use preferences to store login details (account number) then use it to fetch data when querying transactions
 class UserColors {
@@ -8,7 +10,7 @@ class UserColors {
 //  static const blackbackground = Color(0xFF1C1C1C)
   static const yellowColor = Color(0xFFF3D657);
 }
-
+final displayNumber = createDisplay(length: 50);
 class UserWidgets {
   userappbar(IconData icon) {
     return AppBar(
@@ -133,6 +135,55 @@ class UserWidgets {
       ),
     );
   }
+
+  accountDetails(int accountBalance) {
+    return Card(
+      color: Colors.transparent,
+      margin: EdgeInsets.all(10.0),
+      child: Container(
+          color: UserColors.blackbackground,
+          padding: EdgeInsets.all(5.0),
+          child: Column(
+            children: <Widget>[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  IconButton(
+                    icon: Icon(
+                      Icons.arrow_back,
+                      color: UserColors.yellowColor,
+                    ),
+                    onPressed: () {},
+                  ),
+                  Text("Savings",
+                      style: TextStyle(
+                          color: UserColors.yellowColor,
+                          fontSize: 20.0,
+                          fontWeight: FontWeight.bold)),
+                  IconButton(
+                    icon: Icon(
+                      Icons.arrow_forward,
+                      color: UserColors.yellowColor,
+                    ),
+                    onPressed: () {},
+                  )
+                ],
+              ),
+              Center(
+                child: Padding(
+                  padding: EdgeInsets.all(5.0),
+                  child: Text("₦ ${displayNumber(accountBalance)}",
+                      style: TextStyle(
+                          color: UserColors.yellowColor,
+                          fontSize: 24.0,
+                          fontWeight: FontWeight.bold)),
+                ),
+              ),
+              SizedBox(height: 35.0),
+            ],
+          )),
+    );
+  }
 }
 
 class LoginLogic {
@@ -140,6 +191,7 @@ class LoginLogic {
   String password;
 
   login() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     Map<String, String> loginDetails = {
       'phoneNumber': username,
       'password': password
@@ -152,7 +204,12 @@ class LoginLogic {
           headers: {'Content-Type': 'application/json; charset=UTF-8'});
       print('=======> body: ${send.body}');
       print('=======> status: ${send.statusCode}');
-      return send.statusCode;
+      if (send.statusCode == 200) {
+        prefs.setString('account', username);
+        return send.statusCode;
+      } else {
+        return send.statusCode;
+      }
     } catch (e) {
       print('=======> error: $e');
       return null;
@@ -178,6 +235,32 @@ class RegisterLogic {
       print('=======> body: ${send.body}');
       print('=======> status: ${send.statusCode}');
       print('=======> register details: $registerDetails');
+      return send.statusCode;
+    } catch (e) {
+      print('=======> error: $e');
+      return null;
+    }
+  }
+}
+
+class SendMoneyLogic {
+  String username;
+  int amount;
+
+  sendmoney() async {
+    Map<String, dynamic> sendmoneyDetails = {
+      'phoneNumber': username,
+      'amount': amount
+    };
+    Uri link = Uri.parse('https://bank.veegil.com/auth/signup');
+    try {
+      var encodeData = jsonEncode(sendmoneyDetails);
+      var send = await http.post(link,
+          body: encodeData,
+          headers: {'Content-Type': 'application/json; charset=UTF-8'});
+      print('=======> body: ${send.body}');
+      print('=======> status: ${send.statusCode}');
+      print('=======> register details: $sendmoneyDetails');
       return send.statusCode;
     } catch (e) {
       print('=======> error: $e');
