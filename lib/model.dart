@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+// use preferences to store login details (account number) then use it to fetch data when querying transactions
 class UserColors {
   static const blackbackground = Colors.black;
 //  static const blackbackground = Color(0xFF1C1C1C)

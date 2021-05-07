@@ -18,104 +18,113 @@ class _HomeState extends State<Home> {
             context, MaterialPageRoute(builder: (context) => Login()));
       },
       child: Scaffold(
-          backgroundColor: UserColors.blackbackground,
-          appBar: userWidgets.userappbar(Icons.home),
-          body: Column(
-            children: [
-              accountDetails(),
-              Divider(),
-              Expanded(
-                  child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  children: [
-                    Expanded(
-                      flex: 2,
-                      child: Container(
-                        child: Row(
-                          children: [
-                            Expanded(
-                                flex: 1,
-                                child: Container(
-                                  height: double.infinity,
-                                  width: double.infinity,
-                                  decoration: decorContainer(),
-                                  child: Center(
-                                    child: columnContainer(
-                                        'Send Money', Icons.send, 70, 30),
-                                  ),
-                                )),
-                            VerticalDivider(),
-                            Expanded(
-                                flex: 1,
-                                child: Container(
-                                  height: double.infinity,
-                                  width: double.infinity,
-                                  decoration: decorContainer(),
-                                )),
-                          ],
-                        ),
-                      ),
+        backgroundColor: UserColors.blackbackground,
+        appBar: userWidgets.userappbar(Icons.home),
+        body: success(),
+      ),
+    ));
+  }
+
+  success() {
+    return Column(
+      children: [
+        accountDetails(),
+        Divider(),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              children: [
+                Expanded(
+                  flex: 2,
+                  child: Container(
+                    child: Row(
+                      children: [
+                        Expanded(
+                            flex: 1,
+                            child: InkWell(
+                              child: Container(
+                                height: double.infinity,
+                                width: double.infinity,
+                                decoration: decorContainer(),
+                                child: columnContainer(
+                                    'Send Money', Icons.send, 70, 30),
+                              ),
+                            )),
+                        VerticalDivider(),
+                        Expanded(
+                            flex: 1,
+                            child: InkWell(
+                              child: Container(
+                                height: double.infinity,
+                                width: double.infinity,
+                                decoration: decorContainer(),
+                                child: columnContainer('Withdraw',
+                                    Icons.transfer_within_a_station, 70, 30),
+                              ),
+                            )),
+                      ],
                     ),
-                    Divider(),
-                    Expanded(
-                      flex: 2,
-                      child: Container(
+                  ),
+                ),
+                Divider(),
+                Expanded(
+                  flex: 2,
+                  child: InkWell(
+                    child: Container(
                         height: double.infinity,
                         width: double.infinity,
                         decoration: decorContainer(),
-                      ),
-                    ),
-                    Expanded(
-                      flex: 1,
-                      child: Container(
-                        color: Colors.transparent,
-                      ),
-                    ),
-                  ],
+                        child: columnContainer(
+                            'Transaction History', Icons.history, 80, 35)),
+                  ),
                 ),
-              )),
-            ],
-          )),
-    ));
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
   }
 
   columnContainer(
       String text, IconData icon, double iconSize, double textSize) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(
-          icon,
-          color: UserColors.yellowColor,
-          size: iconSize,
-        ),
-        Text(
-          text,
-          style: TextStyle(
-              color: UserColors.yellowColor,
-              fontSize: textSize,
-              fontWeight: FontWeight.bold),
-        )
-      ],
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            icon,
+            color: UserColors.yellowColor,
+            size: iconSize,
+          ),
+          Text(
+            text,
+            style: TextStyle(
+                color: UserColors.yellowColor,
+                fontSize: textSize,
+                fontWeight: FontWeight.bold),
+          )
+        ],
+      ),
     );
   }
 
   decorContainer() {
     return BoxDecoration(
         border: Border.all(
-          color: UserColors.yellowColor,
-        ),
+            // color: UserColors.yellowColor,
+            ),
         borderRadius: BorderRadius.all(Radius.circular(30)));
   }
 
   accountDetails() {
     return Card(
+      color: Colors.transparent,
       margin: EdgeInsets.all(10.0),
       child: Container(
           color: UserColors.blackbackground,
           padding: EdgeInsets.all(5.0),
-          // color: Color(0xFF015FFF),
           child: Column(
             children: <Widget>[
               Row(
@@ -130,7 +139,9 @@ class _HomeState extends State<Home> {
                   ),
                   Text("Savings",
                       style: TextStyle(
-                          color: UserColors.yellowColor, fontSize: 20.0)),
+                          color: UserColors.yellowColor,
+                          fontSize: 20.0,
+                          fontWeight: FontWeight.bold)),
                   IconButton(
                     icon: Icon(
                       Icons.arrow_forward,
@@ -145,7 +156,9 @@ class _HomeState extends State<Home> {
                   padding: EdgeInsets.all(5.0),
                   child: Text(r"$ " "95,940.00",
                       style: TextStyle(
-                          color: UserColors.yellowColor, fontSize: 24.0)),
+                          color: UserColors.yellowColor,
+                          fontSize: 24.0,
+                          fontWeight: FontWeight.bold)),
                 ),
               ),
               SizedBox(height: 35.0),
