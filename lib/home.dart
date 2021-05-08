@@ -8,6 +8,7 @@ import 'package:bankapp/model.dart';
 import 'package:flutter_animator/flutter_animator.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:loading_indicator/loading_indicator.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -72,11 +73,12 @@ class _HomeState extends State<Home> {
           future: getAccount,
           builder: (context, snapshot) {
             if (snapshot.connectionState != ConnectionState.done) {
-              return Center(
-                child: CircularProgressIndicator(
-                  backgroundColor: UserColors.yellowColor,
-                ),
-              );
+              // return Center(
+              //   child: CircularProgressIndicator(
+              //     backgroundColor: UserColors.yellowColor,
+              //   ),
+              // );
+              return UserWidgets().loadingIndicator();
             } else if (snapshot.hasData) {
               return success(accountBalance: snapshot.data);
             } else {
@@ -163,20 +165,45 @@ class _HomeState extends State<Home> {
                 Divider(),
                 Expanded(
                   flex: 2,
-                  child: InkWell(
-                    onTap: () {
-                      return Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => Transaction()));
-                    },
-                    child: Container(
-                      height: double.infinity,
-                      width: double.infinity,
-                      decoration: decorContainer(),
-                      child: columnContainer(
-                          'Transaction History', Icons.history, 80, 35),
-                    ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        flex: 1,
+                        child: InkWell(
+                          onTap: () {
+                            return Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => Transaction()));
+                          },
+                          child: Container(
+                            height: double.infinity,
+                            width: double.infinity,
+                            decoration: decorContainer(),
+                            child: columnContainer(
+                                'Withdraw', Icons.history, 80, 35),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        flex: 1,
+                        child: InkWell(
+                          onTap: () {
+                            return Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => Transaction()));
+                          },
+                          child: Container(
+                            height: double.infinity,
+                            width: double.infinity,
+                            decoration: decorContainer(),
+                            child: columnContainer(
+                                'Transaction History', Icons.history, 80, 35),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],

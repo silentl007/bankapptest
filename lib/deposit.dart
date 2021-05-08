@@ -70,11 +70,7 @@ class _DepositState extends State<Deposit> {
             future: getAccount,
             builder: (context, snapshot) {
               if (snapshot.connectionState != ConnectionState.done) {
-                return Center(
-                  child: CircularProgressIndicator(
-                    backgroundColor: UserColors.yellowColor,
-                  ),
-                );
+                return UserWidgets().loadingIndicator();
               } else if (snapshot.hasData) {
                 return success(context, snapshot.data);
               } else {

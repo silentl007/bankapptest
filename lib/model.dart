@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:loading_indicator/loading_indicator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:number_display/number_display.dart';
 
@@ -69,6 +70,15 @@ class UserWidgets {
         color: UserColors.yellowColor,
         letterSpacing: letterSpace ?? 0,
         height: height ?? 0,
+      ),
+    );
+  }
+
+  loadingIndicator() {
+    return Center(
+      child: LoadingIndicator(
+        indicatorType: Indicator.ballClipRotateMultiple,
+        color: UserColors.yellowColor,
       ),
     );
   }
@@ -256,6 +266,31 @@ class SendMoneyLogic {
       print('=======> body: ${send.body}');
       print('=======> status: ${send.statusCode}');
       print('=======> send money details: $sendmoneyDetails');
+      return send.statusCode;
+    } catch (e) {
+      print('=======> error: $e');
+      return null;
+    }
+  }
+}
+
+class WithdrawMoneyLogic {
+  String username;
+  int amount;
+  withdraw() async {
+    Map<String, dynamic> withdrawmoneyDetails = {
+      'phoneNumber': username,
+      'amount': amount
+    };
+    Uri link = Uri.parse('https://bank.veegil.com/accounts/withdraw');
+    try {
+      var encodeData = jsonEncode(withdrawmoneyDetails);
+      var send = await http.post(link,
+          body: encodeData,
+          headers: {'Content-Type': 'application/json; charset=UTF-8'});
+      print('=======> body: ${send.body}');
+      print('=======> status: ${send.statusCode}');
+      print('=======> send money details: $withdrawmoneyDetails');
       return send.statusCode;
     } catch (e) {
       print('=======> error: $e');
