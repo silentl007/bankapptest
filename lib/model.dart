@@ -83,6 +83,14 @@ class UserWidgets {
     );
   }
 
+  defaultloadingindicator() {
+    return Center(
+      child: CircularProgressIndicator(
+        backgroundColor: UserColors.yellowColor,
+      ),
+    );
+  }
+
   loadingDiag() {
     return Container(
       color: Colors.transparent,

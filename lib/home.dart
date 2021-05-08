@@ -3,6 +3,7 @@ import 'package:bankapp/login.dart';
 import 'package:bankapp/sendmoney.dart';
 import 'package:bankapp/transaction.dart';
 import 'package:bankapp/Deposit.dart';
+import 'package:bankapp/withdraw.dart';
 import 'package:flutter/material.dart';
 import 'package:bankapp/model.dart';
 import 'package:flutter_animator/flutter_animator.dart';
@@ -174,14 +175,14 @@ class _HomeState extends State<Home> {
                             return Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => Transaction()));
+                                    builder: (context) => WithDraw()));
                           },
                           child: Container(
                             height: double.infinity,
                             width: double.infinity,
                             decoration: decorContainer(),
                             child: columnContainer(
-                                'Withdraw', Icons.history, 80, 35),
+                                'Withdraw', Icons.atm, 70, 30),
                           ),
                         ),
                       ),
@@ -199,7 +200,7 @@ class _HomeState extends State<Home> {
                             width: double.infinity,
                             decoration: decorContainer(),
                             child: columnContainer(
-                                'Transaction History', Icons.history, 80, 35),
+                                'Transactions', Icons.history, 70, 30),
                           ),
                         ),
                       ),

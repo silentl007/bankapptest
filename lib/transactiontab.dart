@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:bankapp/model.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:number_display/number_display.dart';
 
 class TransactionTabs extends StatefulWidget {
   final String transType;
@@ -11,6 +12,7 @@ class TransactionTabs extends StatefulWidget {
 }
 
 class _TransactionTabsState extends State<TransactionTabs> {
+  final displayNumber = createDisplay(length: 50);
   var gettrans;
   List transData = [];
   @override
@@ -20,7 +22,37 @@ class _TransactionTabsState extends State<TransactionTabs> {
     gettrans = getTrans();
   }
 
-  getTrans() {}
+  getTrans() async {
+    var decode;
+    Uri link = Uri.parse('https://bank.veegil.com/transactions');
+    try {
+      var response = await http.get(link);
+      if (response.statusCode == 200) {
+        decode = jsonDecode(response.body);
+        for (var data in decode['data']) {
+          if (data['type'] == widget.transType.toLowerCase()) {
+            transData.add(TransModel(
+              transtype: data['type'],
+              amount: data['amount'],
+              accountNumber: data['phoneNumber'],
+              date: data['created'],
+            ));
+          } else {
+            transData.add(TransModel(
+              transtype: data['type'],
+              amount: data['amount'],
+              accountNumber: data['phoneNumber'],
+              date: data['created'],
+            ));
+          }
+        }
+      }
+      return transData;
+    } catch (e) {
+      print('error ====> $e');
+      return null;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,11 +61,6 @@ class _TransactionTabsState extends State<TransactionTabs> {
         future: gettrans,
         builder: (context, snapshot) {
           if (snapshot.connectionState != ConnectionState.done) {
-            // return Center(
-            //   child: CircularProgressIndicator(
-            //     backgroundColor: UserColors.yellowColor,
-            //   ),
-            // );
             return UserWidgets().loadingIndicator();
           } else if (snapshot.hasData) {
             return success(context: context, data: snapshot.data);
@@ -56,11 +83,50 @@ class _TransactionTabsState extends State<TransactionTabs> {
 
   success({BuildContext context, List data}) {
     return ListView.builder(
+      reverse: true,
       itemCount: data.length,
       itemBuilder: (context, index) => Card(
-        child: ListTile(),
+        color: UserColors.blackbackground,
+        child: ListTile(
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                data[index].accountNumber,
+                style: styleText(bold: true),
+              ),
+              Text(
+                "₦ ${displayNumber(data[index].amount ?? 0)}",
+                style: styleText(bold: true),
+              ),
+            ],
+          ),
+          subtitle: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              widget.transType.toLowerCase() == 'credit' ||
+                      widget.transType.toLowerCase() == 'debit'
+                  ? Container()
+                  : Text(
+                      data[index].transtype,
+                      style: styleText(opac: true),
+                    ),
+              Text(
+                data[index].date.substring(0, 10),
+                style: styleText(opac: true),
+              ),
+            ],
+          ),
+        ),
       ),
     );
+  }
+
+  styleText({bool bold, double fontsize, bool opac}) {
+    return TextStyle(
+        color: opac ?? false ? UserColors.yellowColor.withOpacity(0.7) : UserColors.yellowColor,
+        fontSize: fontsize ?? 15 ,
+        fontWeight: bold ?? false ? FontWeight.bold : FontWeight.normal);
   }
 }
 

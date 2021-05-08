@@ -33,10 +33,12 @@ class Transaction extends StatelessWidget {
               ),
               backgroundColor: UserColors.blackbackground,
               bottom: TabBar(
-                isScrollable: true,
+                indicatorColor: UserColors.yellowColor,
+                labelColor: UserColors.yellowColor,
+                // isScrollable: true,
                 tabs: transType
                     .map((tabText) => Tab(
-                          text: tabText,
+                      child: Text(tabText, style: TextStyle(fontWeight: FontWeight.bold),),
                         ))
                     .toList(),
               ),
