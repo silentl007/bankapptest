@@ -57,6 +57,8 @@ class _WithDrawState extends State<WithDraw> {
 
   @override
   Widget build(BuildContext context) {
+     Size size = MediaQuery.of(context).size;
+    double f18 = size.height * .0225;
     return SafeArea(
       child: WillPopScope(
         onWillPop: () {
@@ -65,7 +67,7 @@ class _WithDrawState extends State<WithDraw> {
         },
         child: Scaffold(
           backgroundColor: UserColors.blackbackground,
-          appBar: UserWidgets().userappbar(Icons.atm),
+          appBar: UserWidgets().userappbar(Icons.atm, f18),
           body: FutureBuilder(
             future: getAccount,
             builder: (context, snapshot) {
@@ -106,7 +108,7 @@ class _WithDrawState extends State<WithDraw> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            UserWidgets().accountDetails(amount),
+            UserWidgets().accountDetails(amount,context),
             TextFormField(
                 controller: amountControl,
                 keyboardType: TextInputType.number,
@@ -217,6 +219,8 @@ class _WithDrawState extends State<WithDraw> {
   }
 
   noticeDiag(BuildContext context, String errorDetails) {
+    Size size = MediaQuery.of(context).size;
+    double f45 = size.height * .05632;
     return Container(
       color: Colors.transparent,
       child: AlertDialog(
@@ -226,7 +230,7 @@ class _WithDrawState extends State<WithDraw> {
         title: Center(
             child: Icon(
           Icons.error,
-          size: 45,
+          size: f45,
           color: UserColors.yellowColor,
         )),
         content: Text(

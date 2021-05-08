@@ -14,6 +14,7 @@ class Login extends StatelessWidget {
   Widget build(BuildContext context) {
     final node = FocusScope.of(context);
     Size size = MediaQuery.of(context).size;
+    double f18 = size.height * .0225;
     double h40 = size.height * .05;
     double f24 = size.height * .03;
     double f16 = size.height * .02;
@@ -25,11 +26,11 @@ class Login extends StatelessWidget {
         },
         child: Scaffold(
             backgroundColor: UserColors.blackbackground,
-            appBar: userWidgets.userappbar(Icons.login),
+            appBar: userWidgets.userappbar(Icons.login, f18),
             body: Center(
               child: SingleChildScrollView(
                 child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: f32, vertical: 16),
+                  padding: EdgeInsets.symmetric(horizontal: f32, vertical: f16),
                   child: Form(
                     key: _key,
                     child: Column(
@@ -202,13 +203,7 @@ class Login extends StatelessWidget {
                   style: TextStyle(color: UserColors.yellowColor)),
               actions: [
                 ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                      primary: UserColors.blackbackground,
-                      side: BorderSide(
-                        color: UserColors.yellowColor,
-                      ),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(50)))),
+                  style: UserWidgets().buttonDecor(),
                   onPressed: () => SystemNavigator.pop(),
                   child: Text(
                     'Yes',
@@ -216,13 +211,7 @@ class Login extends StatelessWidget {
                   ),
                 ),
                 ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                      primary: UserColors.blackbackground,
-                      side: BorderSide(
-                        color: UserColors.yellowColor,
-                      ),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(50)))),
+                  style: UserWidgets().buttonDecor(),
                   onPressed: () => Navigator.of(context).pop(false),
                   child: Text(
                     'No',

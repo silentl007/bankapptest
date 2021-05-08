@@ -15,10 +15,20 @@ class UserColors {
 final displayNumber = createDisplay(length: 50);
 
 class UserWidgets {
-  userappbar(IconData icon) {
+  buttonDecor() {
+    return ElevatedButton.styleFrom(
+        primary: UserColors.blackbackground,
+        side: BorderSide(
+          color: UserColors.yellowColor,
+        ),
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(50))));
+  }
+
+  userappbar(IconData icon, double pad18) {
     return AppBar(
       title: Padding(
-        padding: const EdgeInsets.all(18.0),
+        padding: EdgeInsets.all(pad18),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
@@ -107,6 +117,8 @@ class UserWidgets {
   }
 
   noticeDiag(BuildContext context, String errorDetails) {
+    Size size = MediaQuery.of(context).size;
+    double f45 = size.height * .05632;
     return Container(
       color: Colors.transparent,
       child: AlertDialog(
@@ -116,7 +128,7 @@ class UserWidgets {
         title: Center(
             child: Icon(
           Icons.error,
-          size: 45,
+          size: f45,
           color: UserColors.yellowColor,
         )),
         content: Text(
@@ -149,13 +161,19 @@ class UserWidgets {
     );
   }
 
-  accountDetails(int accountBalance) {
+  accountDetails(int accountBalance, BuildContext context) {
+    Size size = MediaQuery.of(context).size;
+    double f10 = size.height * .0125;
+    double f5 = size.height * .00625;
+    double f20 = size.height * .025;
+    double f24 = size.height * .03;
+    double f35 = size.height * .0438;
     return Card(
       color: Colors.transparent,
-      margin: EdgeInsets.all(10.0),
+      margin: EdgeInsets.all(f10),
       child: Container(
           color: UserColors.blackbackground,
-          padding: EdgeInsets.all(5.0),
+          padding: EdgeInsets.all(f5),
           child: Column(
             children: <Widget>[
               Row(
@@ -171,7 +189,7 @@ class UserWidgets {
                   Text("Savings",
                       style: TextStyle(
                           color: UserColors.yellowColor,
-                          fontSize: 20.0,
+                          fontSize: f20,
                           fontWeight: FontWeight.bold)),
                   IconButton(
                     icon: Icon(
@@ -184,15 +202,15 @@ class UserWidgets {
               ),
               Center(
                 child: Padding(
-                  padding: EdgeInsets.all(5.0),
+                  padding: EdgeInsets.all(f5),
                   child: Text("₦ ${displayNumber(accountBalance)}",
                       style: TextStyle(
                           color: UserColors.yellowColor,
-                          fontSize: 24.0,
+                          fontSize: f24,
                           fontWeight: FontWeight.bold)),
                 ),
               ),
-              SizedBox(height: 35.0),
+              SizedBox(height: f35),
             ],
           )),
     );

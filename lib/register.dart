@@ -21,6 +21,7 @@ class _RegisterState extends State<Register> {
     double f24 = size.height * .03;
     double f16 = size.height * .02;
     double f32 = size.height * .04;
+    double f18 = size.height * .0225;
     return SafeArea(
       child: WillPopScope(
         onWillPop: () {
@@ -29,11 +30,11 @@ class _RegisterState extends State<Register> {
         },
         child: Scaffold(
           backgroundColor: UserColors.blackbackground,
-          appBar: userWidgets.userappbar(Icons.how_to_reg),
+          appBar: userWidgets.userappbar(Icons.how_to_reg, 18),
           body: Center(
             child: SingleChildScrollView(
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: f32, vertical: 16),
+                padding: EdgeInsets.symmetric(horizontal: f32, vertical: f16),
                 child: Form(
                   key: _key,
                   child: Column(

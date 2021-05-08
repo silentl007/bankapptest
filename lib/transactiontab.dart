@@ -122,10 +122,11 @@ class _TransactionTabsState extends State<TransactionTabs> {
     );
   }
 
-  styleText({bool bold, double fontsize, bool opac}) {
+  styleText({bool bold, bool opac}) {
     return TextStyle(
-        color: opac ?? false ? UserColors.yellowColor.withOpacity(0.7) : UserColors.yellowColor,
-        fontSize: fontsize ?? 15 ,
+        color: opac ?? false
+            ? UserColors.yellowColor.withOpacity(0.7)
+            : UserColors.yellowColor,
         fontWeight: bold ?? false ? FontWeight.bold : FontWeight.normal);
   }
 }

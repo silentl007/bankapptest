@@ -4,6 +4,7 @@ import 'package:bankapp/model.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:number_display/number_display.dart';
 
 class SendMoney extends StatefulWidget {
   final int balance;
@@ -13,6 +14,7 @@ class SendMoney extends StatefulWidget {
 }
 
 class _SendMoneyState extends State<SendMoney> {
+  final displayNumber = createDisplay(length: 50);
   final accountControl = TextEditingController();
   final amountControl = TextEditingController();
   final _key = GlobalKey<FormState>();
@@ -60,6 +62,8 @@ class _SendMoneyState extends State<SendMoney> {
 
   @override
   Widget build(BuildContext context) {
+     Size size = MediaQuery.of(context).size;
+    double f18 = size.height * .0225;
     return SafeArea(
       child: WillPopScope(
         onWillPop: () {
@@ -68,7 +72,7 @@ class _SendMoneyState extends State<SendMoney> {
         },
         child: Scaffold(
           backgroundColor: UserColors.blackbackground,
-          appBar: UserWidgets().userappbar(Icons.send),
+          appBar: UserWidgets().userappbar(Icons.send, f18),
           body: FutureBuilder(
             future: getAccount,
             builder: (context, snapshot) {
@@ -101,16 +105,16 @@ class _SendMoneyState extends State<SendMoney> {
     double h40 = size.height * .05;
     double f24 = size.height * .03;
     double f16 = size.height * .02;
-    double f32 = size.height * .04;
+    double f18 = size.height * .0225;
     double w200 = size.height * .25;
     return Padding(
-      padding: const EdgeInsets.all(18.0),
+      padding:  EdgeInsets.all(f18),
       child: Form(
         key: _key,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            UserWidgets().accountDetails(amount),
+            UserWidgets().accountDetails(amount, context),
             TextFormField(
                 controller: accountControl,
                 onEditingComplete: () => node.nextFocus(),
@@ -288,6 +292,8 @@ class _SendMoneyState extends State<SendMoney> {
   }
 
   sendDetails(BuildContext context) async {
+    Size size = MediaQuery.of(context).size;
+    double f8 = size.height * .01;
     return showDialog(
         context: context,
         builder: (context) => Container(
@@ -299,7 +305,7 @@ class _SendMoneyState extends State<SendMoney> {
                       style: TextStyle(color: UserColors.yellowColor)),
                 ),
                 content: Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: EdgeInsets.all(f8),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -312,7 +318,7 @@ class _SendMoneyState extends State<SendMoney> {
                           ),
                           Text(
                             '${accountControl.text}',
-                            style: styleText(),
+                            style: styleText(bold: true),
                           )
                         ],
                       ),
@@ -324,8 +330,8 @@ class _SendMoneyState extends State<SendMoney> {
                             style: styleText(),
                           ),
                           Text(
-                            '${amountControl.text}',
-                            style: styleText(),
+                            '₦ ${displayNumber(num.tryParse(amountControl.text))}',
+                            style: styleText(bold: true),
                           )
                         ],
                       ),
@@ -337,8 +343,8 @@ class _SendMoneyState extends State<SendMoney> {
                             style: styleText(),
                           ),
                           Text(
-                            '10.0',
-                            style: styleText(),
+                            '₦ 10.0',
+                            style: styleText(bold: true),
                           )
                         ],
                       ),
@@ -355,14 +361,7 @@ class _SendMoneyState extends State<SendMoney> {
                       'Accept',
                       style: styleText(),
                     ),
-                    style: ElevatedButton.styleFrom(
-                        primary: UserColors.blackbackground,
-                        side: BorderSide(
-                          color: UserColors.yellowColor,
-                        ),
-                        shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(50)))),
+                    style: UserWidgets().buttonDecor(),
                     onPressed: () {
                       Navigator.of(context).pop();
                       send(context);
@@ -377,14 +376,7 @@ class _SendMoneyState extends State<SendMoney> {
                       'Cancel',
                       style: styleText(),
                     ),
-                    style: ElevatedButton.styleFrom(
-                        primary: UserColors.blackbackground,
-                        side: BorderSide(
-                          color: UserColors.yellowColor,
-                        ),
-                        shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(50)))),
+                    style: UserWidgets().buttonDecor(),
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
@@ -394,7 +386,12 @@ class _SendMoneyState extends State<SendMoney> {
             ));
   }
 
-  styleText() {
-    return TextStyle(color: UserColors.yellowColor);
+  styleText({bool bold, bool opac}) {
+    return TextStyle(
+      height: 2,
+        color: opac ?? false
+            ? UserColors.yellowColor.withOpacity(0.7)
+            : UserColors.yellowColor,
+        fontWeight: bold ?? false ? FontWeight.bold : FontWeight.normal);
   }
 }

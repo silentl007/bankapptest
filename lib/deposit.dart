@@ -57,6 +57,8 @@ class _DepositState extends State<Deposit> {
 
   @override
   Widget build(BuildContext context) {
+     Size size = MediaQuery.of(context).size;
+    double f18 = size.height * .0225;
     return SafeArea(
       child: WillPopScope(
         onWillPop: () {
@@ -65,7 +67,7 @@ class _DepositState extends State<Deposit> {
         },
         child: Scaffold(
           backgroundColor: UserColors.blackbackground,
-          appBar: UserWidgets().userappbar(Icons.arrow_circle_down),
+          appBar: UserWidgets().userappbar(Icons.arrow_circle_down, f18),
           body: FutureBuilder(
             future: getAccount,
             builder: (context, snapshot) {
@@ -107,7 +109,7 @@ class _DepositState extends State<Deposit> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            UserWidgets().accountDetails(amount),
+            UserWidgets().accountDetails(amount, context),
             TextFormField(
                 controller: amountControl,
                 keyboardType: TextInputType.number,

@@ -7,6 +7,8 @@ class Transaction extends StatelessWidget {
   final List transType = ['Credit', 'All', 'Debit'];
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
+    double f18 = size.height * .0225;
     return SafeArea(
       child: WillPopScope(
         onWillPop: () {
@@ -20,7 +22,7 @@ class Transaction extends StatelessWidget {
             backgroundColor: UserColors.blackbackground,
             appBar: AppBar(
               title: Padding(
-                padding: EdgeInsets.all(18.0),
+                padding: EdgeInsets.all(f18),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [

@@ -9,7 +9,6 @@ import 'package:bankapp/model.dart';
 import 'package:flutter_animator/flutter_animator.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:loading_indicator/loading_indicator.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -61,6 +60,8 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
+    double f18 = size.height * .0225;
     return SafeArea(
         child: WillPopScope(
       onWillPop: () {
@@ -69,7 +70,7 @@ class _HomeState extends State<Home> {
       },
       child: Scaffold(
         backgroundColor: UserColors.blackbackground,
-        appBar: userWidgets.userappbar(Icons.home),
+        appBar: userWidgets.userappbar(Icons.home, f18),
         body: FutureBuilder(
           future: getAccount,
           builder: (context, snapshot) {
@@ -81,7 +82,7 @@ class _HomeState extends State<Home> {
               // );
               return UserWidgets().loadingIndicator();
             } else if (snapshot.hasData) {
-              return success(accountBalance: snapshot.data);
+              return success(accountBalance: snapshot.data, context: context);
             } else {
               return Center(
                 child: ElevatedButton(
@@ -100,14 +101,25 @@ class _HomeState extends State<Home> {
     ));
   }
 
-  success({int accountBalance}) {
+  success({int accountBalance, BuildContext context}) {
+    Size size = MediaQuery.of(context).size;
+    double h40 = size.height * .05;
+    double f24 = size.height * .03;
+    double f16 = size.height * .02;
+    double f18 = size.height * .0225;
+    double f45 = size.height * .05632;
+    double f8 = size.height * .01;
+    double f32 = size.height * .04;
+    double f30 = size.height * .0375;
+    double f70 = size.height * .08761;
+    double w200 = size.height * .25;
     return Column(
       children: [
-        userWidgets.accountDetails(accountBalance),
+        userWidgets.accountDetails(accountBalance, context),
         Divider(),
         Expanded(
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: EdgeInsets.all(f8),
             child: Column(
               children: [
                 Expanded(
@@ -132,8 +144,8 @@ class _HomeState extends State<Home> {
                                 child: columnContainer(
                                   'Send Money',
                                   Icons.send,
-                                  70,
-                                  30,
+                                  f70,
+                                  f30,
                                 ),
                               ),
                             )),
@@ -154,8 +166,8 @@ class _HomeState extends State<Home> {
                                 child: columnContainer(
                                   'Deposit',
                                   Icons.arrow_circle_down,
-                                  70,
-                                  30,
+                                  f70,
+                                  f30,
                                 ),
                               ),
                             )),
@@ -181,8 +193,8 @@ class _HomeState extends State<Home> {
                             height: double.infinity,
                             width: double.infinity,
                             decoration: decorContainer(),
-                            child: columnContainer(
-                                'Withdraw', Icons.atm, 70, 30),
+                            child:
+                                columnContainer('Withdraw', Icons.atm, f70, f30),
                           ),
                         ),
                       ),
@@ -200,7 +212,7 @@ class _HomeState extends State<Home> {
                             width: double.infinity,
                             decoration: decorContainer(),
                             child: columnContainer(
-                                'Transactions', Icons.history, 70, 30),
+                                'Transactions', Icons.history, f70, f30),
                           ),
                         ),
                       ),
