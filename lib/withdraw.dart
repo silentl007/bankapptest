@@ -15,12 +15,11 @@ class _WithDrawState extends State<WithDraw> {
   final _key = GlobalKey<FormState>();
   WithdrawMoneyLogic withdrawMoneyClass = WithdrawMoneyLogic();
   var getAccount;
-  int balance;
-  String accountN;
-  SharedPreferences prefs;
+  int balance = 0;
+  String accountN = '';
+  SharedPreferences? prefs;
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     setPrefs();
     getAccount = getaccount();
@@ -28,13 +27,13 @@ class _WithDrawState extends State<WithDraw> {
 
   setPrefs() async {
     prefs = await SharedPreferences.getInstance();
-    accountN = prefs.getString('account');
+    accountN = prefs!.getString('account') ?? '';
   }
 
   getaccount() async {
     List accountData;
     var decode;
-    Uri link = Uri.parse('https://bank.veegil.com/accounts/list');
+    Uri link = Uri.parse('$baseUrl/accounts/list');
     try {
       var request = await http.get(link);
       if (request.statusCode == 200) {
@@ -42,12 +41,14 @@ class _WithDrawState extends State<WithDraw> {
         decode = jsonDecode(request.body);
         accountData = decode['data'];
         for (var data in accountData) {
-          if (data['phoneNumber'] == accountN ?? '007') {
+          if (data['phoneNumber'] == accountN) {
             balance = data['balance'];
             print('account balance =====> $balance');
           }
         }
-        return balance;
+        return true;
+      } else {
+        return false;
       }
     } catch (e) {
       print('error =====> $e');
@@ -57,24 +58,25 @@ class _WithDrawState extends State<WithDraw> {
 
   @override
   Widget build(BuildContext context) {
-     Size size = MediaQuery.of(context).size;
+    Size size = MediaQuery.of(context).size;
     double f18 = size.height * .0225;
     return SafeArea(
       child: WillPopScope(
-        onWillPop: () {
-          return Navigator.pushReplacement(
+        onWillPop: () async {
+          Navigator.pushReplacement(
               context, MaterialPageRoute(builder: (context) => Home()));
+          return true;
         },
         child: Scaffold(
           backgroundColor: UserColors.blackbackground,
-          appBar: UserWidgets().userappbar(Icons.atm, f18),
+          appBar: UserWidgets().userappbar(Icons.atm, f18, 'Withdraw'),
           body: FutureBuilder(
             future: getAccount,
             builder: (context, snapshot) {
               if (snapshot.connectionState != ConnectionState.done) {
                 return UserWidgets().loadingIndicator();
-              } else if (snapshot.hasData) {
-                return success(context, snapshot.data);
+              } else if (snapshot.data == true) {
+                return success(context, balance);
               } else {
                 return Center(
                   child: ElevatedButton(
@@ -99,7 +101,6 @@ class _WithDrawState extends State<WithDraw> {
     double h40 = size.height * .05;
     double f24 = size.height * .03;
     double f16 = size.height * .02;
-    double f32 = size.height * .04;
     double w200 = size.height * .25;
     return Padding(
       padding: const EdgeInsets.all(18.0),
@@ -108,21 +109,22 @@ class _WithDrawState extends State<WithDraw> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            UserWidgets().accountDetails(amount,context),
+            UserWidgets().accountDetails(amount, context),
             TextFormField(
                 controller: amountControl,
                 keyboardType: TextInputType.number,
                 validator: (text) {
-                  if (text.isEmpty) {
+                  if (text!.isEmpty) {
                     return 'This field is empty';
                   } else if (text.contains(',')) {
                     return 'Please remove the ,';
                   } else if (text.contains('.')) {
                     return 'Please remove the .';
                   }
+                  return null;
                 },
                 onSaved: (text) {
-                  withdrawMoneyClass.amount = int.tryParse(text);
+                  withdrawMoneyClass.amount = int.tryParse(text!) ?? 0;
                 },
                 decoration: UserWidgets().inputdecor('Amount', f16)),
             Divider(),
@@ -143,7 +145,7 @@ class _WithDrawState extends State<WithDraw> {
     return InkWell(
       onTap: () {
         var keyState = _key.currentState;
-        if (keyState.validate()) {
+        if (keyState!.validate()) {
           withdrawMoneyClass.username = accountN;
           keyState.save();
           send(context);
@@ -212,7 +214,7 @@ class _WithDrawState extends State<WithDraw> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       var keyState = _key.currentState;
       setState(() {
-        keyState.reset();
+        keyState!.reset();
         amountControl.clear();
       });
     });

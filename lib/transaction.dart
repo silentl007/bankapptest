@@ -11,9 +11,10 @@ class Transaction extends StatelessWidget {
     double f18 = size.height * .0225;
     return SafeArea(
       child: WillPopScope(
-        onWillPop: () {
-          return Navigator.pushReplacement(
+        onWillPop: () async {
+          Navigator.pushReplacement(
               context, MaterialPageRoute(builder: (context) => Home()));
+          return true;
         },
         child: DefaultTabController(
           length: transType.length,
@@ -40,7 +41,10 @@ class Transaction extends StatelessWidget {
                 // isScrollable: true,
                 tabs: transType
                     .map((tabText) => Tab(
-                      child: Text(tabText, style: TextStyle(fontWeight: FontWeight.bold),),
+                          child: Text(
+                            tabText,
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
                         ))
                     .toList(),
               ),

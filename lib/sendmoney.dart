@@ -20,26 +20,24 @@ class _SendMoneyState extends State<SendMoney> {
   final _key = GlobalKey<FormState>();
   SendMoneyLogic sendMoneyClass = SendMoneyLogic();
   var getAccount;
-  int balance;
-  String accountN;
-  SharedPreferences prefs;
+  int balance = 0;
+  String accountN = '';
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     setPrefs();
     getAccount = getaccount();
   }
 
   setPrefs() async {
-    prefs = await SharedPreferences.getInstance();
-    accountN = prefs.getString('account');
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    accountN = prefs.getString('account') ?? '';
   }
 
   getaccount() async {
     List accountData;
     var decode;
-    Uri link = Uri.parse('https://bank.veegil.com/accounts/list');
+    Uri link = Uri.parse('$baseUrl/accounts/list');
     try {
       var request = await http.get(link);
       if (request.statusCode == 200) {
@@ -47,12 +45,14 @@ class _SendMoneyState extends State<SendMoney> {
         decode = jsonDecode(request.body);
         accountData = decode['data'];
         for (var data in accountData) {
-          if (data['phoneNumber'] == accountN ?? '007') {
+          if (data['phoneNumber'] == accountN) {
             balance = data['balance'];
             print('account balance =====> $balance');
           }
         }
-        return balance;
+        return true;
+      } else {
+        return false;
       }
     } catch (e) {
       print('error =====> $e');
@@ -62,24 +62,25 @@ class _SendMoneyState extends State<SendMoney> {
 
   @override
   Widget build(BuildContext context) {
-     Size size = MediaQuery.of(context).size;
+    Size size = MediaQuery.of(context).size;
     double f18 = size.height * .0225;
     return SafeArea(
       child: WillPopScope(
-        onWillPop: () {
-          return Navigator.pushReplacement(
+        onWillPop: () async {
+          Navigator.pushReplacement(
               context, MaterialPageRoute(builder: (context) => Home()));
+          return true;
         },
         child: Scaffold(
           backgroundColor: UserColors.blackbackground,
-          appBar: UserWidgets().userappbar(Icons.send, f18),
+          appBar: UserWidgets().userappbar(Icons.send, f18, 'Send Money'),
           body: FutureBuilder(
             future: getAccount,
             builder: (context, snapshot) {
               if (snapshot.connectionState != ConnectionState.done) {
                 return UserWidgets().loadingIndicator();
-              } else if (snapshot.hasData) {
-                return success(context, snapshot.data);
+              } else if (snapshot.data == true) {
+                return success(context, balance);
               } else {
                 return Center(
                   child: ElevatedButton(
@@ -108,7 +109,7 @@ class _SendMoneyState extends State<SendMoney> {
     double f18 = size.height * .0225;
     double w200 = size.height * .25;
     return Padding(
-      padding:  EdgeInsets.all(f18),
+      padding: EdgeInsets.all(f18),
       child: Form(
         key: _key,
         child: Column(
@@ -120,12 +121,13 @@ class _SendMoneyState extends State<SendMoney> {
                 onEditingComplete: () => node.nextFocus(),
                 keyboardType: TextInputType.number,
                 validator: (text) {
-                  if (text.isEmpty) {
+                  if (text!.isEmpty) {
                     return 'This field is empty';
                   }
+                  return null;
                 },
                 onSaved: (text) {
-                  sendMoneyClass.username = text;
+                  sendMoneyClass.username = text!;
                 },
                 decoration: UserWidgets().inputdecor('Account Number', f16)),
             Divider(),
@@ -133,16 +135,17 @@ class _SendMoneyState extends State<SendMoney> {
                 controller: amountControl,
                 keyboardType: TextInputType.number,
                 validator: (text) {
-                  if (text.isEmpty) {
+                  if (text!.isEmpty) {
                     return 'This field is empty';
                   } else if (text.contains(',')) {
                     return 'Please remove the ,';
                   } else if (text.contains('.')) {
                     return 'Please remove the .';
                   }
+                  return null;
                 },
                 onSaved: (text) {
-                  sendMoneyClass.amount = int.tryParse(text);
+                  sendMoneyClass.amount = int.tryParse(text!)!;
                 },
                 decoration: UserWidgets().inputdecor('Amount', f16)),
             Divider(),
@@ -169,7 +172,7 @@ class _SendMoneyState extends State<SendMoney> {
     return InkWell(
       onTap: () {
         var keyState = _key.currentState;
-        if (keyState.validate()) {
+        if (keyState!.validate()) {
           keyState.save();
           sendDetails(context);
           // send(context);
@@ -238,7 +241,7 @@ class _SendMoneyState extends State<SendMoney> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       var keyState = _key.currentState;
       setState(() {
-        keyState.reset();
+        keyState!.reset();
         accountControl.clear();
         amountControl.clear();
       });
@@ -386,9 +389,9 @@ class _SendMoneyState extends State<SendMoney> {
             ));
   }
 
-  styleText({bool bold, bool opac}) {
+  styleText({bool? bold, bool? opac}) {
     return TextStyle(
-      height: 2,
+        height: 2,
         color: opac ?? false
             ? UserColors.yellowColor.withOpacity(0.7)
             : UserColors.yellowColor,

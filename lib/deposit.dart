@@ -15,26 +15,24 @@ class _DepositState extends State<Deposit> {
   final _key = GlobalKey<FormState>();
   SendMoneyLogic sendMoneyClass = SendMoneyLogic();
   var getAccount;
-  int balance;
-  String accountN;
-  SharedPreferences prefs;
+  int balance = 0;
+  String accountN = '';
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     setPrefs();
     getAccount = getaccount();
   }
 
   setPrefs() async {
-    prefs = await SharedPreferences.getInstance();
-    accountN = prefs.getString('account');
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    accountN = prefs.getString('account') ?? '';
   }
 
   getaccount() async {
     List accountData;
     var decode;
-    Uri link = Uri.parse('https://bank.veegil.com/accounts/list');
+    Uri link = Uri.parse('$baseUrl/accounts/list');
     try {
       var request = await http.get(link);
       if (request.statusCode == 200) {
@@ -42,12 +40,14 @@ class _DepositState extends State<Deposit> {
         decode = jsonDecode(request.body);
         accountData = decode['data'];
         for (var data in accountData) {
-          if (data['phoneNumber'] == accountN ?? '007') {
+          if (data['phoneNumber'] == accountN) {
             balance = data['balance'];
             print('account balance =====> $balance');
           }
         }
-        return balance;
+        return true;
+      } else {
+        return false;
       }
     } catch (e) {
       print('error =====> $e');
@@ -57,24 +57,25 @@ class _DepositState extends State<Deposit> {
 
   @override
   Widget build(BuildContext context) {
-     Size size = MediaQuery.of(context).size;
+    Size size = MediaQuery.of(context).size;
     double f18 = size.height * .0225;
     return SafeArea(
       child: WillPopScope(
-        onWillPop: () {
-          return Navigator.pushReplacement(
+        onWillPop: () async  {
+           Navigator.pushReplacement(
               context, MaterialPageRoute(builder: (context) => Home()));
+              return true;
         },
         child: Scaffold(
           backgroundColor: UserColors.blackbackground,
-          appBar: UserWidgets().userappbar(Icons.arrow_circle_down, f18),
+          appBar: UserWidgets().userappbar(Icons.arrow_circle_down, f18, 'Deposit'),
           body: FutureBuilder(
             future: getAccount,
             builder: (context, snapshot) {
               if (snapshot.connectionState != ConnectionState.done) {
                 return UserWidgets().loadingIndicator();
-              } else if (snapshot.hasData) {
-                return success(context, snapshot.data);
+              } else if (snapshot.data == true) {
+                return success(context, balance);
               } else {
                 return Center(
                   child: ElevatedButton(
@@ -96,11 +97,9 @@ class _DepositState extends State<Deposit> {
 
   success(BuildContext context, int amount) {
     Size size = MediaQuery.of(context).size;
-    final node = FocusScope.of(context);
     double h40 = size.height * .05;
     double f24 = size.height * .03;
     double f16 = size.height * .02;
-    double f32 = size.height * .04;
     double w200 = size.height * .25;
     return Padding(
       padding: const EdgeInsets.all(18.0),
@@ -114,16 +113,17 @@ class _DepositState extends State<Deposit> {
                 controller: amountControl,
                 keyboardType: TextInputType.number,
                 validator: (text) {
-                  if (text.isEmpty) {
+                  if (text!.isEmpty) {
                     return 'This field is empty';
                   } else if (text.contains(',')) {
                     return 'Please remove the ,';
                   } else if (text.contains('.')) {
                     return 'Please remove the .';
                   }
+                  return null;
                 },
                 onSaved: (text) {
-                  sendMoneyClass.amount = int.tryParse(text);
+                  sendMoneyClass.amount = int.tryParse(text!)!;
                 },
                 decoration: UserWidgets().inputdecor('Amount', f16)),
             Divider(),
@@ -144,7 +144,7 @@ class _DepositState extends State<Deposit> {
     return InkWell(
       onTap: () {
         var keyState = _key.currentState;
-        if (keyState.validate()) {
+        if (keyState!.validate()) {
           sendMoneyClass.username = accountN;
           keyState.save();
           send(context);
@@ -213,7 +213,7 @@ class _DepositState extends State<Deposit> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       var keyState = _key.currentState;
       setState(() {
-        keyState.reset();
+        keyState!.reset();
         amountControl.clear();
       });
     });

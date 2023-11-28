@@ -6,7 +6,7 @@ import 'package:number_display/number_display.dart';
 
 class TransactionTabs extends StatefulWidget {
   final String transType;
-  TransactionTabs({this.transType});
+  TransactionTabs({required this.transType});
   @override
   _TransactionTabsState createState() => _TransactionTabsState();
 }
@@ -17,14 +17,13 @@ class _TransactionTabsState extends State<TransactionTabs> {
   List transData = [];
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     gettrans = getTrans();
   }
 
   getTrans() async {
     var decode;
-    Uri link = Uri.parse('https://bank.veegil.com/transactions');
+    Uri link = Uri.parse('$baseUrl/transactions');
     try {
       var response = await http.get(link);
       if (response.statusCode == 200) {
@@ -46,8 +45,10 @@ class _TransactionTabsState extends State<TransactionTabs> {
             ));
           }
         }
+        return true;
+      } else {
+        return false;
       }
-      return transData;
     } catch (e) {
       print('error ====> $e');
       return null;
@@ -62,8 +63,8 @@ class _TransactionTabsState extends State<TransactionTabs> {
         builder: (context, snapshot) {
           if (snapshot.connectionState != ConnectionState.done) {
             return UserWidgets().loadingIndicator();
-          } else if (snapshot.hasData) {
-            return success(context: context, data: snapshot.data);
+          } else if (snapshot.data == true) {
+            return success(context: context, data: transData);
           } else {
             return Center(
               child: ElevatedButton(
@@ -81,7 +82,7 @@ class _TransactionTabsState extends State<TransactionTabs> {
     );
   }
 
-  success({BuildContext context, List data}) {
+  success({required BuildContext context, required List data}) {
     return ListView.builder(
       reverse: true,
       itemCount: data.length,
@@ -122,7 +123,7 @@ class _TransactionTabsState extends State<TransactionTabs> {
     );
   }
 
-  styleText({bool bold, bool opac}) {
+  styleText({bool? bold, bool? opac}) {
     return TextStyle(
         color: opac ?? false
             ? UserColors.yellowColor.withOpacity(0.7)
@@ -136,5 +137,9 @@ class TransModel {
   int amount;
   String accountNumber;
   String date;
-  TransModel({this.accountNumber, this.amount, this.date, this.transtype});
+  TransModel(
+      {required this.accountNumber,
+      required this.amount,
+      required this.date,
+      required this.transtype});
 }

@@ -21,12 +21,13 @@ class Login extends StatelessWidget {
     double f32 = size.height * .04;
     return SafeArea(
       child: WillPopScope(
-        onWillPop: () {
+        onWillPop: () async {
           _backFunction(context);
+          return true;
         },
         child: Scaffold(
             backgroundColor: UserColors.blackbackground,
-            appBar: userWidgets.userappbar(Icons.login, f18),
+            appBar: userWidgets.userappbar(Icons.login, f18, 'Login'),
             body: Center(
               child: SingleChildScrollView(
                 child: Padding(
@@ -61,12 +62,13 @@ class Login extends StatelessWidget {
                             decoration:
                                 userWidgets.inputdecor('Account Number', f16),
                             validator: (text) {
-                              if (text.isEmpty) {
+                              if (text!.isEmpty) {
                                 return 'This field is empty';
                               }
+                              return null;
                             },
                             onSaved: (text) {
-                              loginClass.username = text;
+                              loginClass.username = text!;
                             },
                           ),
                           Divider(),
@@ -75,12 +77,13 @@ class Login extends StatelessWidget {
                               obscureText: true,
                               keyboardType: TextInputType.text,
                               validator: (text) {
-                                if (text.isEmpty) {
+                                if (text!.isEmpty) {
                                   return 'This field is empty';
                                 }
+                                return null;
                               },
                               onSaved: (text) {
-                                loginClass.password = text;
+                                loginClass.password = text!;
                               },
                               decoration:
                                   userWidgets.inputdecor('Password', f16)),
@@ -108,19 +111,20 @@ class Login extends StatelessWidget {
       onTap: () {
         if (text == 'Sign-In') {
           var keyState = _key.currentState;
-          if (keyState.validate()) {
+          if (keyState!.validate()) {
             keyState.save();
             // comment when publish
             // next(context);
-            login(context); // there is a problem with the api, uncomment when you publish
+            login(
+                context); // there is a problem with the api, uncomment when you publish
           }
         } else {
-          return Navigator.pushReplacement(
+           Navigator.pushReplacement(
               context, MaterialPageRoute(builder: (context) => Register()));
         }
       },
       child: Padding(
-        padding: const EdgeInsets.only(left:0, right: 0),
+        padding: const EdgeInsets.only(left: 0, right: 0),
         child: Container(
           height: containerH,
           decoration: BoxDecoration(
@@ -181,12 +185,12 @@ class Login extends StatelessWidget {
   loginSuccess(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Navigator.pop(context);
-      return Navigator.pushReplacement(
+       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => Home()));
     });
   }
 
-  Future<bool> _backFunction(BuildContext context) {
+  _backFunction(BuildContext context) {
     return showDialog(
         context: context,
         builder: (context) => AlertDialog(

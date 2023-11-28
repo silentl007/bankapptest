@@ -5,6 +5,8 @@ import 'package:loading_indicator/loading_indicator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:number_display/number_display.dart';
 
+String baseUrl = 'https://bankapi.veegil.com';
+
 // use preferences to store login details (account number) then use it to fetch data when querying transactions
 class UserColors {
   static const blackbackground = Colors.black;
@@ -17,7 +19,7 @@ final displayNumber = createDisplay(length: 50);
 class UserWidgets {
   buttonDecor() {
     return ElevatedButton.styleFrom(
-        primary: UserColors.blackbackground,
+        backgroundColor: UserColors.blackbackground,
         side: BorderSide(
           color: UserColors.yellowColor,
         ),
@@ -25,13 +27,18 @@ class UserWidgets {
             borderRadius: BorderRadius.all(Radius.circular(50))));
   }
 
-  userappbar(IconData icon, double pad18) {
+  userappbar(IconData icon, double pad18, String title) {
     return AppBar(
       title: Padding(
         padding: EdgeInsets.all(pad18),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
+            Text(title,
+                style: TextStyle(
+                    color: UserColors.yellowColor,
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold)),
             Icon(
               icon,
               color: UserColors.yellowColor,
@@ -66,11 +73,11 @@ class UserWidgets {
   }
 
   welcomeText(
-      {@required String text,
-      @required double sizeFont,
-      double height,
-      double letterSpace,
-      bool bold}) {
+      {required String text,
+      required double sizeFont,
+      double? height,
+      double? letterSpace,
+      bool bold = false}) {
     return Text(
       text,
       textAlign: TextAlign.end,
@@ -88,7 +95,7 @@ class UserWidgets {
     return Center(
       child: LoadingIndicator(
         indicatorType: Indicator.ballClipRotateMultiple,
-        color: UserColors.yellowColor,
+        colors: [UserColors.yellowColor],
       ),
     );
   }
@@ -176,29 +183,12 @@ class UserWidgets {
           padding: EdgeInsets.all(f5),
           child: Column(
             children: <Widget>[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  IconButton(
-                    icon: Icon(
-                      Icons.arrow_back,
-                      color: UserColors.yellowColor,
-                    ),
-                    onPressed: () {},
-                  ),
-                  Text("Savings",
-                      style: TextStyle(
-                          color: UserColors.yellowColor,
-                          fontSize: f20,
-                          fontWeight: FontWeight.bold)),
-                  IconButton(
-                    icon: Icon(
-                      Icons.arrow_forward,
-                      color: UserColors.yellowColor,
-                    ),
-                    onPressed: () {},
-                  )
-                ],
+              Center(
+                child: Text("Savings",
+                    style: TextStyle(
+                        color: UserColors.yellowColor,
+                        fontSize: f20,
+                        fontWeight: FontWeight.bold)),
               ),
               Center(
                 child: Padding(
@@ -218,8 +208,8 @@ class UserWidgets {
 }
 
 class LoginLogic {
-  String username;
-  String password;
+  String username = '';
+  String password = '';
 
   login() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -227,7 +217,7 @@ class LoginLogic {
       'phoneNumber': username,
       'password': password
     };
-    Uri link = Uri.parse('https://bank.veegil.com/auth/login');
+    Uri link = Uri.parse('$baseUrl/auth/login');
     try {
       var encodeData = jsonEncode(loginDetails);
       var send = await http.post(link,
@@ -249,15 +239,15 @@ class LoginLogic {
 }
 
 class RegisterLogic {
-  String username;
-  String password;
+  String username = '';
+  String password = '';
 
   register() async {
     Map<String, String> registerDetails = {
       'phoneNumber': username,
       'password': password
     };
-    Uri link = Uri.parse('https://bank.veegil.com/auth/signup');
+    Uri link = Uri.parse('$baseUrl/auth/signup');
     try {
       var encodeData = jsonEncode(registerDetails);
       var send = await http.post(link,
@@ -275,15 +265,15 @@ class RegisterLogic {
 }
 
 class SendMoneyLogic {
-  String username;
-  int amount;
+  String username = '';
+  int amount = 0;
 
   sendmoney() async {
     Map<String, dynamic> sendmoneyDetails = {
       'phoneNumber': username,
       'amount': amount
     };
-    Uri link = Uri.parse('https://bank.veegil.com/accounts/transfer');
+    Uri link = Uri.parse('$baseUrl/accounts/transfer');
     try {
       var encodeData = jsonEncode(sendmoneyDetails);
       var send = await http.post(link,
@@ -301,14 +291,14 @@ class SendMoneyLogic {
 }
 
 class WithdrawMoneyLogic {
-  String username;
-  int amount;
+  String username = '';
+  int amount = 0;
   withdraw() async {
     Map<String, dynamic> withdrawmoneyDetails = {
       'phoneNumber': username,
       'amount': amount
     };
-    Uri link = Uri.parse('https://bank.veegil.com/accounts/withdraw');
+    Uri link = Uri.parse('$baseUrl/accounts/withdraw');
     try {
       var encodeData = jsonEncode(withdrawmoneyDetails);
       var send = await http.post(link,

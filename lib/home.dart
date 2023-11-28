@@ -18,26 +18,24 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   final UserWidgets userWidgets = UserWidgets();
   var getAccount;
-  int balance;
-  String accountN;
-  SharedPreferences prefs;
+  int balance = 0;
+  String accountN = '';
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     setPrefs();
     getAccount = getaccount();
   }
 
   setPrefs() async {
-    prefs = await SharedPreferences.getInstance();
-    accountN = prefs.getString('account');
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    accountN = prefs.getString('account') ?? '';
   }
 
   getaccount() async {
     List accountData;
     var decode;
-    Uri link = Uri.parse('https://bank.veegil.com/accounts/list');
+    Uri link = Uri.parse('$baseUrl/accounts/list');
     try {
       var request = await http.get(link);
       if (request.statusCode == 200) {
@@ -45,12 +43,14 @@ class _HomeState extends State<Home> {
         decode = jsonDecode(request.body);
         accountData = decode['data'];
         for (var data in accountData) {
-          if (data['phoneNumber'] == accountN ?? '007') {
+          if (data['phoneNumber'] == accountN ) {
             balance = data['balance'];
             print('account balance =====> $balance');
           }
         }
-        return balance;
+         return true;
+      } else {
+        return false;
       }
     } catch (e) {
       print('error =====> $e');
@@ -64,25 +64,22 @@ class _HomeState extends State<Home> {
     double f18 = size.height * .0225;
     return SafeArea(
         child: WillPopScope(
-      onWillPop: () {
-        return Navigator.pushReplacement(
+      onWillPop: ()async  {
+         Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => Login()));
+            return true;
       },
       child: Scaffold(
         backgroundColor: UserColors.blackbackground,
-        appBar: userWidgets.userappbar(Icons.home, f18),
+        appBar: userWidgets.userappbar(Icons.home, f18, 'Home'),
         body: FutureBuilder(
           future: getAccount,
           builder: (context, snapshot) {
             if (snapshot.connectionState != ConnectionState.done) {
-              // return Center(
-              //   child: CircularProgressIndicator(
-              //     backgroundColor: UserColors.yellowColor,
-              //   ),
-              // );
+           
               return UserWidgets().loadingIndicator();
-            } else if (snapshot.hasData) {
-              return success(accountBalance: snapshot.data, context: context);
+            } else if (snapshot.data == true) {
+              return success(accountBalance: balance, context: context);
             } else {
               return Center(
                 child: ElevatedButton(
@@ -101,18 +98,12 @@ class _HomeState extends State<Home> {
     ));
   }
 
-  success({int accountBalance, BuildContext context}) {
+  success({required int accountBalance,required  BuildContext context}) {
     Size size = MediaQuery.of(context).size;
-    double h40 = size.height * .05;
-    double f24 = size.height * .03;
-    double f16 = size.height * .02;
-    double f18 = size.height * .0225;
-    double f45 = size.height * .05632;
+   
     double f8 = size.height * .01;
-    double f32 = size.height * .04;
     double f30 = size.height * .0375;
     double f70 = size.height * .08761;
-    double w200 = size.height * .25;
     return Column(
       children: [
         userWidgets.accountDetails(accountBalance, context),
@@ -131,7 +122,7 @@ class _HomeState extends State<Home> {
                             flex: 1,
                             child: InkWell(
                               onTap: () {
-                                return Navigator.pushReplacement(
+                                 Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) =>
@@ -154,7 +145,7 @@ class _HomeState extends State<Home> {
                             flex: 1,
                             child: InkWell(
                               onTap: () {
-                                return Navigator.pushReplacement(
+                                 Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) => Deposit()));
@@ -184,7 +175,7 @@ class _HomeState extends State<Home> {
                         flex: 1,
                         child: InkWell(
                           onTap: () {
-                            return Navigator.pushReplacement(
+                             Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => WithDraw()));
@@ -193,8 +184,8 @@ class _HomeState extends State<Home> {
                             height: double.infinity,
                             width: double.infinity,
                             decoration: decorContainer(),
-                            child:
-                                columnContainer('Withdraw', Icons.atm, f70, f30),
+                            child: columnContainer(
+                                'Withdraw', Icons.atm, f70, f30),
                           ),
                         ),
                       ),
@@ -202,7 +193,7 @@ class _HomeState extends State<Home> {
                         flex: 1,
                         child: InkWell(
                           onTap: () {
-                            return Navigator.pushReplacement(
+                             Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => Transaction()));
@@ -227,7 +218,7 @@ class _HomeState extends State<Home> {
     );
   }
 
-  heartBeatAnimation({Widget widget}) {
+  heartBeatAnimation({required Widget widget}) {
     return Pulse(
       preferences: AnimationPreferences(autoPlay: AnimationPlayStates.Loop),
       child: widget,

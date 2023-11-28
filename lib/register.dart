@@ -21,16 +21,16 @@ class _RegisterState extends State<Register> {
     double f24 = size.height * .03;
     double f16 = size.height * .02;
     double f32 = size.height * .04;
-    double f18 = size.height * .0225;
     return SafeArea(
       child: WillPopScope(
-        onWillPop: () {
-          return Navigator.pushReplacement(
+        onWillPop: () async {
+          Navigator.pushReplacement(
               context, MaterialPageRoute(builder: (context) => Login()));
+          return true;
         },
         child: Scaffold(
           backgroundColor: UserColors.blackbackground,
-          appBar: userWidgets.userappbar(Icons.how_to_reg, 18),
+          appBar: userWidgets.userappbar(Icons.how_to_reg, 18, 'Register'),
           body: Center(
             child: SingleChildScrollView(
               child: Padding(
@@ -65,12 +65,13 @@ class _RegisterState extends State<Register> {
                         decoration:
                             userWidgets.inputdecor('Account Number', f16),
                         validator: (text) {
-                          if (text.isEmpty) {
+                          if (text!.isEmpty) {
                             return 'This field is empty';
                           }
+                          return null;
                         },
                         onSaved: (text) {
-                          registerClass.username = text;
+                          registerClass.username = text!;
                         },
                       ),
                       Divider(),
@@ -79,12 +80,13 @@ class _RegisterState extends State<Register> {
                           obscureText: true,
                           keyboardType: TextInputType.text,
                           validator: (text) {
-                            if (text.isEmpty) {
+                            if (text!.isEmpty) {
                               return 'This field is empty';
                             }
+                            return null;
                           },
                           onSaved: (text) {
-                            registerClass.password = text;
+                            registerClass.password = text!;
                           },
                           decoration: userWidgets.inputdecor('Password', f16)),
                       Divider(),
@@ -105,7 +107,7 @@ class _RegisterState extends State<Register> {
     return InkWell(
       onTap: () {
         var keyState = _key.currentState;
-        if (keyState.validate()) {
+        if (keyState!.validate()) {
           keyState.save();
           register(context);
         }
@@ -150,7 +152,8 @@ class _RegisterState extends State<Register> {
                   return userWidgets.loadingDiag();
                 } else if (snapshot.data == 200) {
                   resetField();
-                  return userWidgets.noticeDiag(context, 'Account registered successfully!');
+                  return userWidgets.noticeDiag(
+                      context, 'Account registered successfully!');
                 } else if (snapshot.data == 404) {
                   return userWidgets.noticeDiag(context, 'Unable to register');
                 } else if (snapshot.data == 409) {
@@ -168,7 +171,7 @@ class _RegisterState extends State<Register> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       var keyState = _key.currentState;
       setState(() {
-        keyState.reset();
+        keyState!.reset();
         usernameControl.clear();
         passwordControl.clear();
       });

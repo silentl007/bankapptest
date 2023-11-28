@@ -1,4 +1,4 @@
-package com.example.bankapp
+package com.veegil.bankapp
 
 import io.flutter.embedding.android.FlutterActivity
 
